@@ -12,9 +12,19 @@ namespace DiscordBot.Commands
         public abstract CommandPermissionLevel getRequiredPermissionLevel();
         public abstract void invoke(MessageEventArgs e, bool pub);
 
-        public Boolean isOnCooldown(MessageEventArgs e)
+        public virtual bool goesOnCooldown()
         {
-            return CommandManager.Instance.IsCommandOnCooldown(this, e);
+            return true;
+        }
+
+        public virtual int cooldownLength()
+        {
+            return Program.Instance._config.commandCooldownSecs;
+        }
+
+        public virtual string[] getCommandAliases()
+        {
+            return new string[0];
         }
 
     }

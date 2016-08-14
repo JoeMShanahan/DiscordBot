@@ -7,7 +7,7 @@ using Discord;
 
 namespace DiscordBot.Commands
 {
-    public class CommandTest : CommandBase, ICommand
+    public class CommandSuperStrypi : CommandBase, ICommand
     {
         public override CommandPermissionLevel getRequiredPermissionLevel()
         {
@@ -16,12 +16,12 @@ namespace DiscordBot.Commands
 
         public override void invoke(MessageEventArgs e, bool pub)
         {
-            e.Channel.SendMessage("Received.");
+            e.Channel.SendMessage("https://i.imgur.com/7xyikQa.gif");
         }
 
         public override string[] getCommandAliases()
         {
-            return new string[] { "t", "tt", "test2" };
+            return new string[] { "strypi" };
         }
     }
 }

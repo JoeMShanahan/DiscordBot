@@ -21,5 +21,15 @@ namespace DiscordBot.Commands
             Program.Instance._config.saveConfig();
             Program.Instance.client.Disconnect();
         }
+
+        public override bool goesOnCooldown()
+        {
+            return false;
+        }
+
+        public override string[] getCommandAliases()
+        {
+            return new string[] { "qqq", "die", "terminate", "exit" };
+        }
     }
 }

@@ -16,27 +16,27 @@ namespace DiscordBot.Config
 
     public class BotConfig
     {
-        public string BOT_TOKEN { get; set; } = "YOUR.TOKEN.HERE"; // Bot's token (think password)
+        public string botAPIToken { get; set; } = "YOUR.TOKEN.HERE"; // Bot's token (think password)
 
-        public ulong[] BOT_OWNERS { get; set; } = new ulong[3]{ 1, 2, 3 }; // List of bot owner account IDs
+        public ulong[] botOwnerAccountIDs { get; set; } = new ulong[3]{ 1, 2, 3 }; // List of bot owner account IDs
 
-        public bool NO_ADMIN_SPAM { get; set; } = false; // Can admins bypass command cooldowns and other anti-spam measures?
+        public bool enableAdminAntiSpam { get; set; } = false; // Can admins bypass command cooldowns and other anti-spam measures?
 
-        public int COMMAND_COOLDOWN_SECS { get; set; } = 30; // How long does a command go on cooldown for after being used? (per server)
+        public int commandCooldownSecs { get; set; } = 30; // How long does a command go on cooldown for after being used? (per server)
 
-        public bool USE_DEBUG_CHANNEL { get; set; } = true; // SAhould the bot make use of a debug channel for information or error logging?
+        public bool useDebugChannel { get; set; } = true; // SAhould the bot make use of a debug channel for information or error logging?
 
-        public string DEBUG_CHANNEL_SERVER_NAME { get; set; } = "SERVER.NAME.THE.DEBUG.CHANNEL.IS.ON"; // The name of the server that the debug channel is located on
+        public string debugChannelServerName { get; set; } = "SERVER.NAME.THE.DEBUG.CHANNEL.IS.ON"; // The name of the server that the debug channel is located on
 
-        public string DEBUG_CHANNEL_NAME { get; set; } = "DEBUG.CHANNEL.NAME"; // The name of the debug channel
+        public string debugChannelName { get; set; } = "DEBUG.CHANNEL.NAME"; // The name of the debug channel
 
-        public bool LOG_PERMISSION_ERRORS { get; set; } = true; // Should we log permission errors to the debug channel?
+        public bool announcePermissionErrors { get; set; } = true; // Should we log permission errors to the debug channel?
 
-        public string COMMAND_CHARACTERS { get; set; } = "!~#.$"; // What character does a command have to start with to be treated as a command?
+        public string commandTriggerCharacters { get; set; } = "!~#.$"; // What character does a command have to start with to be treated as a command?
 
-        public string PUBLIC_COMMAND_CHARACTERS { get; set; } = "~#$"; // Which of the above command characters are treated as "public" commands (replies sent to channel, not DM)? Note that characters listed here, but not in COMMAND_CHARACTERS will have no effect.
+        public string publicRepyCommandCharacters { get; set; } = "~#$"; // Which of the above command characters are treated as "public" commands (replies sent to channel, not DM)? Note that characters listed here, but not in COMMAND_CHARACTERS will have no effect.
 
-        public bool ANNOUNCE_COOLDOWN_CHANGES { get; set; } = false; // Should the bot announce when a command goes on cooldown in the debug channel? Defaults to false because it's spammy. Useful for begugging commands that aren't working.
+        public bool debugAnnounceCooldownChanges { get; set; } = false; // Should the bot announce when a command goes on cooldown in the debug channel? Defaults to false because it's spammy. Useful for begugging commands that aren't working.
 
         public void saveConfig()
         {

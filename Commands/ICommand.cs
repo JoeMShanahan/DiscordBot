@@ -12,6 +12,9 @@ namespace DiscordBot.Commands
 
         void invoke(MessageEventArgs e, bool pub);
         CommandPermissionLevel getRequiredPermissionLevel();
+        int cooldownLength();
+        bool goesOnCooldown();
+        string[] getCommandAliases();
 
     }
 }

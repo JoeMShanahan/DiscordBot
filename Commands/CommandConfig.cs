@@ -25,7 +25,7 @@ namespace DiscordBot.Commands
             }
             else if (command.Equals("no_admin_spam"))
             {
-                Program.Instance._config.NO_ADMIN_SPAM = Convert.ToBoolean(e.Message.Text.Split(' ')[2]);
+                Program.Instance._config.enableAdminAntiSpam = Convert.ToBoolean(e.Message.Text.Split(' ')[2]);
             }
             /*else if (command.Equals("set")) {
                 string configParam = e.Message.Text.Split(' ')[2];
@@ -45,6 +45,11 @@ namespace DiscordBot.Commands
             if (pub) e.Channel.SendMessage(reply);
             else e.User.SendMessage(reply);
 
+        }
+
+        public override bool goesOnCooldown()
+        {
+            return false;
         }
     }
 }

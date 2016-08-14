@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System.IO;
 using System;
 using DiscordBot.Utilities;
+using DiscordBot.Extensions;
 
 namespace DiscordBot.Commands
 {
@@ -27,29 +28,59 @@ namespace DiscordBot.Commands
 
         private void runThread(MessageEventArgs e, bool pub, bool lastLaunch = false)
         {
+
+            bool search = false;
+            string searchText = string.Empty;
+
+            if (e.Message.Text.Split(' ').Length > 1)
+            {
+                search = true;
+                searchText = e.Message.Text.Substring(e.Message.Text.Split(' ')[0].Length + 1);
+            }
+
             try {
-                JObject _json = JObject.Parse(Utils.getWebPage("https://ipeer.auron.co.uk/launchschedule/api/1/launches?limit=1&omitapidata=1"+(lastLaunch ? "&history=1" : "")));
-                JToken json = _json["launches"][0];
+
+                string url = String.Format("https://ipeer.auron.co.uk/launchschedule/api/1/launches?limit=1&omitapidata=1{0}", (lastLaunch ? "&history=1" : ""));
+                if (search)
+                    url = String.Format("https://ipeer.auron.co.uk/launchschedule/api/1/launches?omitapidata=1{0}&noreturnlimit=1", (lastLaunch ? "&history=1" : ""));
+                JObject _json = JObject.Parse(Utils.getWebPage(url));
+
+
+                JToken json = null;
+                if (search)
+                {
+                    // In what world does a third-party library not have predicate search functions?
+                    JToken _tmp = _json["launches"];
+                    foreach (JToken j in _tmp)
+                    {
+                        if (j["vehicle"].ToString().ToLower().Contains(searchText) || (j["vehicle"].ToString().ToLower().Contains("super strypi") && searchText.EqualsIgnoreCase("oops")) /* Everyone loves a good easter egg */)
+                        {
+                            json = j;
+                            break;
+                        }
+                    }
+                    if (json == null)
+                    {
+                        e.Channel.SendMessage(String.Format("Sorry {0}, I couldn't find any rockets that matched the search text '{1}'.", e.User.Mention, searchText));
+                        return;
+                    }
+                    else
+                    {
+                        e.Channel.SendMessage(String.Format("{0}, the {1} launch match for '{2}' is:", e.User.Mention, lastLaunch ? "last" : "next", searchText));
+                    }
+                }
+                else
+                {
+                    json = _json["launches"][0];
+                }
                 string vehicle = json["vehicle"].ToString();
                 string payload = json["payload"].ToString();
 
-                DateTime launch = DateTime.Parse(json["launchtime"].ToString())/*.ToUniversalTime()*/;
-                TimeSpan span = (launch - DateTime.UtcNow);
-                bool past = false;
-                if (span.Ticks < 0)
-                {
-                    past = true;
-                    span = span.Duration();
-                }
+                string date;
+                string timeStamp = LaunchUtils.getFormattedTime(json, out date);
+                string final = String.Format("{0}/{1} — {2} {3}", vehicle, payload, date, timeStamp);
 
-                string time = String.Format("{0}:{1}:{2}", span.Hours.ToString("D2"), span.Minutes.ToString("D2"), span.Seconds.ToString("D2"));
-                if (span.Days > 0) time = String.Format("{0} days, {1}", span.Days.ToString("D2"), time);
-
-                string dateFormat = @"dd MMM yyyy \@ HH:mm:ss \U\T\C";
-
-                string final = String.Format("{0}/{1} — {2} ({4}{3})", vehicle, payload, launch.ToString(dateFormat), time, (past?"T+":"L-"));
-
-                e.Channel.SendMessage(final);
+                e.Channel.SendMessage((search?"\t":"")+final);
             }
             catch (Exception _e)
             {

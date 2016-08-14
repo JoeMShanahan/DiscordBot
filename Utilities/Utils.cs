@@ -13,7 +13,7 @@ namespace DiscordBot.Utilities
 
         public static bool userIsOwner(User u)
         {
-            return Program.Instance._config.BOT_OWNERS.Contains(u.Id);
+            return Program.Instance._config.botOwnerAccountIDs.Contains(u.Id);
         }
 
         public static bool userIsServerAdmin(User user)
@@ -55,8 +55,8 @@ namespace DiscordBot.Utilities
 
             try
             {
-                Server debug_server = Program.Instance.client.Servers.First(s => s.Name.Equals(Program.Instance._config.DEBUG_CHANNEL_SERVER_NAME));
-                Channel debug_channel = debug_server.TextChannels.First(c => c.Name.Equals(Program.Instance._config.DEBUG_CHANNEL_NAME));
+                Server debug_server = Program.Instance.client.Servers.First(s => s.Name.Equals(Program.Instance._config.debugChannelServerName));
+                Channel debug_channel = debug_server.TextChannels.First(c => c.Name.Equals(Program.Instance._config.debugChannelName));
                 Console.WriteLine("{0} {1}", debug_server, debug_channel);
                 debug_channel.SendMessage(message.ToString());
             }
@@ -76,6 +76,16 @@ namespace DiscordBot.Utilities
                     ServicePointManager.ServerCertificateValidationCallback = null; // People have had mixed results with "resetting" it like this, but it's the only option we really have
             }
             return data;
+        }
+
+        public static string getApplicationEXEFolderPath()
+        {
+            return AppDomain.CurrentDomain.BaseDirectory;
+        }
+
+        public static string FormatUptime(TimeSpan t)
+        {
+            return string.Format("{0:00}:{1:00}:{2:00}:{3:00}", t.TotalDays, t.Hours, t.Minutes, t.Seconds);
         }
 
     }

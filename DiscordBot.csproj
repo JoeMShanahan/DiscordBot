@@ -72,6 +72,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="WebSocket4Net">
       <HintPath>..\packages\WebSocket4Net.0.14.1\lib\net45\WebSocket4Net.dll</HintPath>
     </Reference>
@@ -81,17 +82,25 @@
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\CommandConfig.cs" />
     <Compile Include="Commands\CommandLastLaunch.cs" />
+    <Compile Include="Commands\CommandLaunches.cs" />
     <Compile Include="Commands\CommandLeave.cs" />
+    <Compile Include="Commands\CommandListCommands.cs" />
     <Compile Include="Commands\CommandListServers.cs" />
     <Compile Include="Commands\CommandManager.cs" />
     <Compile Include="Commands\CommandMyPermissions.cs" />
     <Compile Include="Commands\CommandNextLaunch.cs" />
     <Compile Include="Commands\CommandQuit.cs" />
+    <Compile Include="Commands\CommandSetGame.cs" />
+    <Compile Include="Commands\CommandSuperStrypi.cs" />
     <Compile Include="Commands\CommandTest.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Config\BotConfig.cs" />
+    <Compile Include="Extensions\StringBuilderExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Logging\Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\LaunchUtils.cs" />
     <Compile Include="Utilities\Utils.cs" />
   </ItemGroup>
   <ItemGroup>

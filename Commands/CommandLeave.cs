@@ -28,5 +28,10 @@ namespace DiscordBot.Commands
             Thread.Sleep(1000);
             e.Server.Leave();
         }
+
+        public override bool goesOnCooldown()
+        {
+            return false;
+        }
     }
 }
