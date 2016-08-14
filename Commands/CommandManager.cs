@@ -26,7 +26,9 @@ namespace DiscordBot.Commands
             new CommandMyPermissions(),
             new CommandConfig(),
             new CommandQuit(),
-            new CommandNextLaunch()
+            new CommandNextLaunch(),
+            new CommandLeave(),
+            new CommandTest()
         };
         public Dictionary<Server, Dictionary<ICommand, DateTime>> _cooldowns = new Dictionary<Server, Dictionary<ICommand, DateTime>>();
 
@@ -39,12 +41,14 @@ namespace DiscordBot.Commands
 
         public bool IsCommandOnCooldown(ICommand c, MessageEventArgs e)
         {
-            if (Utils.userIsOwner(e.User) && !Program.Instance._config.NO_ADMIN_SPAM) { return false; } // Command are always avaialble to owners if NO_ADMIN_SPAM is false
+            if (Utils.userIsOwner(e.User)/* && !Program.Instance._config.NO_ADMIN_SPAM*/) { return false; } // Command are always avaialble to owners :)
             else if (Utils.userIsServerOwner(e.User, e.Server) && !Program.Instance._config.NO_ADMIN_SPAM) { return false; } // User is the owner of the server and we're not preventing admin spam, command is available.
             else if (Utils.userIsServerAdmin(e.User) && !Program.Instance._config.NO_ADMIN_SPAM) { return false; } // User is admin on the server and we're not preventing admin spam, therefore, command is available.
             else if (!_cooldowns.ContainsKey(e.Server)) { return false; } // No sever entry, no command are on cooldown for that server
             else if (!_cooldowns[e.Server].ContainsKey(c)) { return false; } // Command is not in the cooldown list
-            else return DateTime.Compare((_cooldowns[e.Server][c].AddSeconds(Program.Instance._config.COMMAND_COOLDOWN_SECS)), DateTime.Now) <= 0;
+            else {
+                //Utils.sendToDebugChannel("{0} // {1} // {2}", _cooldowns[e.Server][c].AddSeconds(Program.Instance._config.COMMAND_COOLDOWN_SECS), DateTime.Now, DateTime.Compare((_cooldowns[e.Server][c].AddSeconds(Program.Instance._config.COMMAND_COOLDOWN_SECS)), DateTime.Now));
+                return DateTime.Compare((_cooldowns[e.Server][c].AddSeconds(Program.Instance._config.COMMAND_COOLDOWN_SECS)), DateTime.Now) == 1; }
         }
 
         public void putCommandOnCooldown(ICommand c, Server s)

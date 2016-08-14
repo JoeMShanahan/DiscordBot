@@ -80,11 +80,13 @@
     <Compile Include="Commands\CommandAmIOwner.cs" />
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\CommandConfig.cs" />
+    <Compile Include="Commands\CommandLeave.cs" />
     <Compile Include="Commands\CommandListServers.cs" />
     <Compile Include="Commands\CommandManager.cs" />
     <Compile Include="Commands\CommandMyPermissions.cs" />
     <Compile Include="Commands\CommandNextLaunch.cs" />
     <Compile Include="Commands\CommandQuit.cs" />
+    <Compile Include="Commands\CommandTest.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Config\BotConfig.cs" />
     <Compile Include="Program.cs" />

@@ -22,7 +22,7 @@ namespace DiscordBot.Config
 
         public bool NO_ADMIN_SPAM { get; set; } = false; // Can admins bypass command cooldowns and other anti-spam measures?
 
-        public int COMMAND_COOLDOWN_SECS { get; set; } = 10; // How long does a command go on cooldown for after being used? (per server)
+        public int COMMAND_COOLDOWN_SECS { get; set; } = 30; // How long does a command go on cooldown for after being used? (per server)
 
         public bool USE_DEBUG_CHANNEL { get; set; } = true; // SAhould the bot make use of a debug channel for information or error logging?
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using DiscordBot.Utilities;
 
 namespace DiscordBot.Commands
 {
@@ -21,6 +22,10 @@ namespace DiscordBot.Commands
 
             if (command.Equals("save")) {
                 Program.Instance._config.saveConfig();
+            }
+            else if (command.Equals("no_admin_spam"))
+            {
+                Program.Instance._config.NO_ADMIN_SPAM = Convert.ToBoolean(e.Message.Text.Split(' ')[2]);
             }
             /*else if (command.Equals("set")) {
                 string configParam = e.Message.Text.Split(' ')[2];
