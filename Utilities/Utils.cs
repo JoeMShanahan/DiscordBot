@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -60,6 +61,21 @@ namespace DiscordBot.Utilities
                 debug_channel.SendMessage(message.ToString());
             }
             catch { Console.WriteLine("Cannot send messages to debug channel because it wasn't found."); }
+        }
+
+        public static string getWebPage(string address, bool ignoreCerts = false, SecurityProtocolType prot = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3)
+        {
+            string data = "";
+            using (WebClient c = new WebClient())
+            {
+                ServicePointManager.SecurityProtocol = prot;
+                if (ignoreCerts)
+                    ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
+                data = c.DownloadString(address);
+                if (ignoreCerts)
+                    ServicePointManager.ServerCertificateValidationCallback = null; // People have had mixed results with "resetting" it like this, but it's the only option we really have
+            }
+            return data;
         }
 
     }

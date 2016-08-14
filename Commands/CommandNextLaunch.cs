@@ -4,6 +4,7 @@ using System.Net;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System;
+using DiscordBot.Utilities;
 
 namespace DiscordBot.Commands
 {
@@ -24,31 +25,29 @@ namespace DiscordBot.Commands
             t.Start();
         }
 
-        private void runThread(MessageEventArgs e, bool pub)
+        private void runThread(MessageEventArgs e, bool pub, bool lastLaunch = false)
         {
             try {
-                string data = "";
-                using (WebClient c = new WebClient())
-                {
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
-                    ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
-                    data = c.DownloadString("http://ipeer.auron.co.uk/launchschedule/api/1/launches?limit=1&omitapidata=1"); // This causes a fatal exception, and I can't fix it, so this entire project is dead. \o/
-                }
-
-                JObject _json = JObject.Parse(data);
+                JObject _json = JObject.Parse(Utils.getWebPage("https://ipeer.auron.co.uk/launchschedule/api/1/launches?limit=1&omitapidata=1"+(lastLaunch ? "&history=1" : "")));
                 JToken json = _json["launches"][0];
                 string vehicle = json["vehicle"].ToString();
                 string payload = json["payload"].ToString();
 
                 DateTime launch = DateTime.Parse(json["launchtime"].ToString())/*.ToUniversalTime()*/;
                 TimeSpan span = (launch - DateTime.UtcNow);
+                bool past = false;
+                if (span.Ticks < 0)
+                {
+                    past = true;
+                    span = span.Duration();
+                }
 
                 string time = String.Format("{0}:{1}:{2}", span.Hours.ToString("D2"), span.Minutes.ToString("D2"), span.Seconds.ToString("D2"));
                 if (span.Days > 0) time = String.Format("{0} days, {1}", span.Days.ToString("D2"), time);
 
                 string dateFormat = @"dd MMM yyyy \@ HH:mm:ss \U\T\C";
 
-                string final = String.Format("{0}/{1} — {2} ({3})", vehicle, payload, launch.ToString(dateFormat), time);
+                string final = String.Format("{0}/{1} — {2} ({4}{3})", vehicle, payload, launch.ToString(dateFormat), time, (past?"T+":"L-"));
 
                 e.Channel.SendMessage(final);
             }
@@ -56,6 +55,17 @@ namespace DiscordBot.Commands
             {
                 e.Channel.SendMessage("Couldn't fetch data because an orror occurred. If it persists, please inform iPeer and show him this: `" + _e.ToString() + " // " + e.Message);
             }
+        }
+
+        public void customInvoke(MessageEventArgs e, bool pub) // Writing an essential duplicate of this command just to do the last launch (instead of next) wasn't really a good idea, so I'm hacking it in like any sensible programmer
+        {
+
+            e.Channel.SendIsTyping();
+            Thread t = new Thread(new ThreadStart(() => runThread(e, pub, true)));
+            t.Name = "LaunchBot NextLaunch Thread";
+            t.IsBackground = true;
+            t.Start();
+
         }
     }
 }

@@ -80,6 +80,7 @@
     <Compile Include="Commands\CommandAmIOwner.cs" />
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\CommandConfig.cs" />
+    <Compile Include="Commands\CommandLastLaunch.cs" />
     <Compile Include="Commands\CommandLeave.cs" />
     <Compile Include="Commands\CommandListServers.cs" />
     <Compile Include="Commands\CommandManager.cs" />

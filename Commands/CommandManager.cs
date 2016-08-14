@@ -28,7 +28,8 @@ namespace DiscordBot.Commands
             new CommandQuit(),
             new CommandNextLaunch(),
             new CommandLeave(),
-            new CommandTest()
+            new CommandTest(),
+            new CommandLastLaunch()
         };
         public Dictionary<Server, Dictionary<ICommand, DateTime>> _cooldowns = new Dictionary<Server, Dictionary<ICommand, DateTime>>();
 
