@@ -3,8 +3,8 @@
 ### What's collected?
 DiscordBot logs some information it receives for anti-abuse and debugging purposes. Below is a list of what information is currently collected
 
-* When a user sends a message to the Bot via DM
-* When a user sends a message to a text channel
+* Messages sent to the bot via DM
+* Messages sent to a text channel
   * DiscordBot will only log text chat for channels that its applicable role (if any) has the "Read Messages" permission for.
     * Note that DiscordBot will also not reply to commands in channels where this permission is not granted.
 * When a user joins or leaves the server
