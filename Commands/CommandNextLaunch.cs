@@ -59,6 +59,9 @@ namespace DiscordBot.Commands
                             break;
                         }
                     }
+					
+					// TODO: Put this command reply into one line to ease server admin's jobs if they want to remove it.
+					
                     if (json == null)
                     {
                         e.Channel.SendMessage(String.Format("Sorry {0}, I couldn't find any rockets that matched the search text '{1}'.", e.User.Mention, searchText));

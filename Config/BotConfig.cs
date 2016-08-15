@@ -20,6 +20,8 @@ namespace DiscordBot.Config
 
         public ulong[] botOwnerAccountIDs { get; set; } = new ulong[3]{ 1, 2, 3 }; // List of bot owner account IDs
 
+        public ulong[] ignoredUsers { get; set; } = new ulong[0]; // Who, if anyone, is the bot ignoring commands from?
+
         public bool enableAdminAntiSpam { get; set; } = false; // Can admins bypass command cooldowns and other anti-spam measures?
 
         public int commandCooldownSecs { get; set; } = 30; // How long does a command go on cooldown for after being used? (per server)

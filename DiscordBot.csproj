@@ -81,9 +81,11 @@
     <Compile Include="Commands\CommandAmIOwner.cs" />
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\CommandConfig.cs" />
+    <Compile Include="Commands\CommandIgnore.cs" />
     <Compile Include="Commands\CommandLastLaunch.cs" />
     <Compile Include="Commands\CommandLaunches.cs" />
     <Compile Include="Commands\CommandLeave.cs" />
+    <Compile Include="Commands\CommandLeaveServer.cs" />
     <Compile Include="Commands\CommandListCommands.cs" />
     <Compile Include="Commands\CommandListServers.cs" />
     <Compile Include="Commands\CommandManager.cs" />
@@ -98,6 +100,8 @@
     <Compile Include="Extensions\StringBuilderExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\ServerLogger.cs" />
+    <Compile Include="Logging\ServerLogManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\LaunchUtils.cs" />

@@ -58,9 +58,9 @@ namespace DiscordBot.Logging
 
             string[] files = Directory.GetFiles(Path.Combine(Utils.getApplicationEXEFolderPath(), "logs"));
             foreach (string f in files)
-            {
                 File.Delete(f);
-            }
+            foreach (string d in Directory.GetDirectories(Path.Combine(Utils.getApplicationEXEFolderPath(), "logs")))
+                Directory.Delete(d, true);
 
         }
 

@@ -16,6 +16,9 @@ namespace DiscordBot.Commands
 
         public override void invoke(MessageEventArgs e, bool pub)
         {
+
+            bool chans = (e.Message.Text.Split(' ').Length > 1 && e.Message.Text.Split(' ')[1].Equals("-c"));
+
             StringBuilder sb = new StringBuilder();
             sb.Append("```");
 
@@ -25,9 +28,9 @@ namespace DiscordBot.Commands
             {
 
                 sb.AppendLine(String.Format("{0} [{1}]", s.Name, s.Id));
-
-                foreach (Channel c in s.AllChannels)
-                    sb.AppendLine(String.Format("\t({2}) {0} [{1}]", c.Name, c.Id, c.Type));
+                if (chans)
+                    foreach (Channel c in s.AllChannels)
+                        sb.AppendLine(String.Format("\t({2}{3}) {0} [{1}]", c.Name, c.Id, c.Type, (c == s.DefaultChannel ? ", default" : "")));
 
             }
 

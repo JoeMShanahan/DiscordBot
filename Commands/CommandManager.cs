@@ -84,7 +84,11 @@ namespace DiscordBot.Commands
         {
             foreach (ICommand c in commandsToInvoke)
             {
-                this.Logger.Log("Invoking command '{0}' for user '{1}' [{2}] on server '{3}' [{4}]", c.ToString(), e.User.Name, e.User.Id, e.Server.Name, e.Server.Id);
+
+                string logString = String.Format("Invoking command '{0}' for user '{1}' [{2}] on server '{3}' [{4}]", c.ToString(), e.User.Name, e.User.Id, e.Server.Name, e.Server.Id);
+                this.Logger.Log(logString);
+                Program.Instance.serverLogManager.getLoggerForServer(e.Server).Log(e.Channel, logString);
+
                 if (IsCommandOnCooldown(c, e)) { continue; }
                 CommandPermissionLevel user_perms = Utils.getCommandPermissionlevelForUser(e.User, e.Server);
                 if (c.getRequiredPermissionLevel() > user_perms) {
