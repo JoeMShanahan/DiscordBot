@@ -50,7 +50,7 @@ namespace DiscordBot.Commands
                 return;
             }
 
-            JObject _json = JObject.Parse(Utils.getWebPage("https://ipeer.auron.co.uk/launchschedule/api/1/launches?limit="+limit+"&omitapidata=1" + (past ? "&history=1" : "")));
+            JObject _json = JObject.Parse(Utils.getWebPage("https://ipeer.auron.co.uk/launchschedule/api/1/launches?cutoff="+Utils.getEpochTime()+"&limit="+limit+"&omitapidata=1" + (past ? "&history=1" : "")));
             JToken launches = _json["launches"];
             int maxCount = launches.Count();
             StringBuilder sb = new StringBuilder();

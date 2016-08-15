@@ -88,5 +88,11 @@ namespace DiscordBot.Utilities
             return string.Format("{0:00}:{1:00}:{2:00}:{3:00}", t.TotalDays, t.Hours, t.Minutes, t.Seconds);
         }
 
+        public static int getEpochTime()
+        {
+            TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            return (int)t.TotalSeconds;
+        }
+
     }
 }

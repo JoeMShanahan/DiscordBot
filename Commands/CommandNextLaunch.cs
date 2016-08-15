@@ -40,9 +40,9 @@ namespace DiscordBot.Commands
 
             try {
 
-                string url = String.Format("https://ipeer.auron.co.uk/launchschedule/api/1/launches?limit=1&omitapidata=1{0}", (lastLaunch ? "&history=1" : ""));
+                string url = String.Format("https://ipeer.auron.co.uk/launchschedule/api/1/launches?cutoff="+Utils.getEpochTime()+"&limit=1&omitapidata=1{0}", (lastLaunch ? "&history=1" : ""));
                 if (search)
-                    url = String.Format("https://ipeer.auron.co.uk/launchschedule/api/1/launches?omitapidata=1{0}&noreturnlimit=1", (lastLaunch ? "&history=1" : ""));
+                    url = String.Format("https://ipeer.auron.co.uk/launchschedule/api/1/launches?cutoff="+Utils.getEpochTime()+"&omitapidata=1{0}&noreturnlimit=1", (lastLaunch ? "&history=1" : ""));
                 JObject _json = JObject.Parse(Utils.getWebPage(url));
 
 
