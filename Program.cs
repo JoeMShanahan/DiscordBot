@@ -10,6 +10,7 @@ using DiscordBot.Config;
 using DiscordBot.Commands;
 using DiscordBot.Logging;
 using DiscordBot.Utilities;
+using DiscordBot.Fun;
 
 namespace DiscordBot
 {
@@ -24,6 +25,7 @@ namespace DiscordBot
         public Logger Logger { get; private set; }
         public CommandManager commandManager { get; private set; }
         public ServerLogManager serverLogManager { get; private set; }
+        public FunManager funManager { get; private set; }
 
         static void Main(string[] args)
         {
@@ -68,6 +70,10 @@ namespace DiscordBot
                 this.Logger.Log("Initialising CommandManager");
                 // Set up command manager
                 this.commandManager = new CommandManager();
+
+                this.Logger.Log("Initialising FunManager");
+                this.funManager = new FunManager();
+
                 this.Logger.Log("Starting DiscordClient");
                 this.client = new DiscordClient(new DiscordConfigBuilder()
                 {
@@ -165,6 +171,7 @@ namespace DiscordBot
 
         private void MessageReceived(object sender, MessageEventArgs e)
         {
+            this.funManager.onMessageReceived(e);
             this.serverLogManager.getLoggerForServerID(e.Server.Id).Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
 #if DEBUG
             this.Logger.Log("[{0}] {1} [{4}]@{3}: {2}", e.Server, e.User, e.Message.Text, e.Channel, e.User.Id);

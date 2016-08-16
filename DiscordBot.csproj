@@ -97,8 +97,12 @@
     <Compile Include="Commands\CommandTest.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Config\BotConfig.cs" />
+    <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Extensions\StringBuilderExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Fun\FunManager.cs" />
+    <Compile Include="Fun\FunModuleBase.cs" />
+    <Compile Include="Fun\IFunModule.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\ServerLogger.cs" />
     <Compile Include="Logging\ServerLogManager.cs" />
