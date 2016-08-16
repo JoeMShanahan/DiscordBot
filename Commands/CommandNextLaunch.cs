@@ -6,6 +6,7 @@ using System.IO;
 using System;
 using DiscordBot.Utilities;
 using DiscordBot.Extensions;
+using System.Text;
 
 namespace DiscordBot.Commands
 {
@@ -45,6 +46,7 @@ namespace DiscordBot.Commands
                     url = String.Format("https://ipeer.auron.co.uk/launchschedule/api/1/launches?cutoff="+Utils.getEpochTime()+"&omitapidata=1{0}&noreturnlimit=1", (lastLaunch ? "&history=1" : ""));
                 JObject _json = JObject.Parse(Utils.getWebPage(url));
 
+                StringBuilder b = new StringBuilder();
 
                 JToken json = null;
                 if (search)
@@ -69,7 +71,7 @@ namespace DiscordBot.Commands
                     }
                     else
                     {
-                        e.Channel.SendMessage(String.Format("{0}, the {1} launch match for '{2}' is:", e.User.Mention, lastLaunch ? "last" : "next", searchText));
+                        b.AppendFormattedLine(String.Format("{0}, the {1} launch match for '{2}' is:", e.User.Mention, lastLaunch ? "last" : "next", searchText));
                     }
                 }
                 else
@@ -79,11 +81,15 @@ namespace DiscordBot.Commands
                 string vehicle = json["vehicle"].ToString();
                 string payload = json["payload"].ToString();
 
+                string location = json["location"].ToString();
+
                 string date;
                 string timeStamp = LaunchUtils.getFormattedTime(json, out date);
                 string final = String.Format("{0}/{1} — {2} {3}", vehicle, payload, date, timeStamp);
+                b.AppendFormattedLine((search ? "\t" : "") + final);
+                b.AppendFormattedLine((search ? "\t" : "")+"From {0}", location);
 
-                e.Channel.SendMessage((search?"\t":"")+final);
+                e.Channel.SendMessage(b.ToString());
             }
             catch (Exception _e)
             {
