@@ -85,7 +85,7 @@ namespace DiscordBot.Utilities
 
         public static string FormatUptime(TimeSpan t)
         {
-            return string.Format("{0:00}:{1:00}:{2:00}:{3:00}", t.TotalDays, t.Hours, t.Minutes, t.Seconds);
+            return string.Format("{0:00}:{1:00}:{2:00}:{3:00}", t.Days, t.Hours, t.Minutes, t.Seconds);
         }
 
         public static int getEpochTime()
