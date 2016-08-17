@@ -1,21 +1,18 @@
-﻿using Discord;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Discord;
 
 namespace DiscordBot.Commands
 {
-    public abstract class CommandBase : ICommand // I know we don't need to implement the interface here, I do it just to make sure I have all the methods in the base class.
+    public abstract class PhraseCommandBase : ICommand
     {
-        public abstract CommandPermissionLevel getRequiredPermissionLevel();
-        public abstract void invoke(MessageEventArgs e, bool pub);
 
-        public virtual bool goesOnCooldown()
-        {
-            return true;
-        }
+        public abstract void invoke(MessageEventArgs e, bool pub);
+        public abstract string triggerPattern();
+
 
         public virtual int cooldownLength()
         {
@@ -27,10 +24,14 @@ namespace DiscordBot.Commands
             return new string[0];
         }
 
-        public virtual string triggerPattern()
+        public virtual CommandPermissionLevel getRequiredPermissionLevel()
         {
-            return string.Empty;
+            return CommandPermissionLevel.NORMAL_USER;
         }
 
+        public virtual bool goesOnCooldown()
+        {
+            return true;
+        }
     }
 }

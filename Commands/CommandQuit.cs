@@ -29,7 +29,7 @@ namespace DiscordBot.Commands
 
         public override string[] getCommandAliases()
         {
-            return new string[] { "qqq", "die", "terminate", "exit" };
+            return new string[] { "qqq", "die", "terminate", "exit", "disconnect" };
         }
     }
 }

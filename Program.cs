@@ -215,28 +215,18 @@ namespace DiscordBot
             this.Logger.Log("[{0}] {1} [{4}]@{3}: {2}", e.Server, e.User, e.Message.Text, e.Channel, e.User.Id);
 #endif
             }
+
+            this.commandManager.invokeMatchingPhraseCommands(e);
             if (this._config.commandTriggerCharacters.Contains(e.Message.Text.Substring(0, 1)))
             {
-
                 string command = e.Message.Text.Substring(1).Split(' ')[0];
-                if (this._config.ignoredUsers.Contains(e.User.Id))
-                {
-                    string logMsg = String.Format("Ignoring command '{0}' from user '{1}' [{2}] as they are on the ignore list", command, e.User.Name, e.User.Id);
-
-                    if (isDM)
-                        this.messageLogger.Log(e.Channel, logMsg, LogLevel.WARNING);
-                    else
-                        this.serverLogManager.getLoggerForServer(e.Server).Log(e.Channel, logMsg, LogLevel.WARNING);
-
-                    this.Logger.Log(logMsg, LogLevel.WARNING);
-                    return;
-                }
                 this.commandManager.invokeCommandsFromName(command, e, isDM);
             }
             else if (!isDM && e.Message.Text.Contains("unacceptable") && e.Server.Id == 213292578093793282)
             {
                 e.Channel.SendMessage("https://www.youtube.com/watch?v=aaSRYecKaqc");
             }
+
         }
     }
 }

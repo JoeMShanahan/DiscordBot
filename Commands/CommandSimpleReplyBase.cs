@@ -47,5 +47,10 @@ namespace DiscordBot.Commands
             else
                 e.User.SendMessage(this.reply);
         }
+
+        public virtual string triggerPattern()
+        {
+            return string.Empty;
+        }
     }
 }

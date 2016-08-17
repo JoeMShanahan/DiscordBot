@@ -95,11 +95,15 @@
     <Compile Include="Commands\CommandNextLaunch.cs" />
     <Compile Include="Commands\CommandPlayGame.cs" />
     <Compile Include="Commands\CommandQuit.cs" />
+    <Compile Include="Commands\CommandRegexTest.cs" />
     <Compile Include="Commands\CommandSetGame.cs" />
     <Compile Include="Commands\CommandSimpleReplyBase.cs" />
     <Compile Include="Commands\CommandSuperStrypi.cs" />
     <Compile Include="Commands\CommandTest.cs" />
     <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\PhraseCommandBase.cs" />
+    <Compile Include="Commands\PhraseCommandQuit.cs" />
+    <Compile Include="Commands\PhraseCommandTest.cs" />
     <Compile Include="Config\BotConfig.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Extensions\StringBuilderExtensions.cs" />

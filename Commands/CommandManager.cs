@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DiscordBot.Commands
@@ -15,7 +16,8 @@ namespace DiscordBot.Commands
         NORMAL_USER = 0,
         SERVER_ADMIN = 1,
         SERVER_OWNER = 2,
-        BOT_OWNER = 3
+        BOT_OWNER = 3,
+        TEST = 4 // Nobody has this level. It's for testing invalid permissions!
     }
 
     public class CommandManager
@@ -116,11 +118,11 @@ namespace DiscordBot.Commands
         }
 
 
-        public void manageCommandInvokes(ICommand[] commandsToInvoke, MessageEventArgs e, bool forcePrivate = false)
+        public void manageCommandInvokes(ICommand[] commandsToInvoke, MessageEventArgs e, bool forcePrivate = false, bool isPhrase = false)
         {
             foreach (ICommand c in commandsToInvoke)
             {
-                bool isPublic = forcePrivate ? false : Program.Instance._config.publicRepyCommandCharacters.Contains(e.Message.Text.Substring(0, 1));
+                bool isPublic = forcePrivate ? false : Program.Instance._config.publicRepyCommandCharacters.Contains(e.Message.Text.Substring(0, 1)) || isPhrase;
 
                 string logString = string.Empty;
                 if (isPublic)
@@ -163,8 +165,16 @@ namespace DiscordBot.Commands
 
         public void invokeCommandsFromName(string name, MessageEventArgs e, bool forcePrivate = false)
         {
+            if (Utils.isUserIgnored(name, e)) { return; }
             List<ICommand> _toInvoke = _commands.FindAll(c => c.ToString().ToLower().Substring(c.ToString().LastIndexOf(".") + 8).Equals(name.ToLower()) || c.getCommandAliases().Contains(name.ToLower())); // All command clases start with "Command", so we have to make sure we strip that when checking for matching command names
             manageCommandInvokes(_toInvoke.ToArray(), e, forcePrivate);
+        }
+
+        public void invokeMatchingPhraseCommands(MessageEventArgs e)
+        {
+            if (Utils.isUserIgnored("PHRASE_COMMAND", e)) { return; }
+            List<ICommand> _toinvoke = _commands.FindAll(c => !c.triggerPattern().Equals(string.Empty) && Regex.IsMatch(e.Message.RawText, c.triggerPattern().Replace("%me%", String.Format("<@{0}>", Program.Instance.client.CurrentUser.Id)), RegexOptions.IgnoreCase));
+            manageCommandInvokes(_toinvoke.ToArray(), e, false, true);
         }
 
         public void loadCommandClasses()
@@ -172,11 +182,11 @@ namespace DiscordBot.Commands
             this.Logger.Log("Attempting to initialise commands");
             if (this._commands.Count > 0)
                 this._commands.Clear();
+            string[] blacklistedCommandClasses = new string[] { "CommandManager", "CommandBase", "CommandPermissionLevel", "CommandSimpleReplyBase", "PhraseCommandBase" };
             Type[] types = Assembly.GetExecutingAssembly().GetTypes();
-            Type[] _toInit = types.Where(a => a.Name.StartsWith("Command") && !a.Name.Equals("CommandBase")).ToArray();
+            Type[] _toInit = types.Where(a => (a.Name.StartsWith("Command") || a.Name.StartsWith("PhraseCommand")) && !blacklistedCommandClasses.Contains(a.Name)).ToArray();
             this.Logger.Log("{0} command(s) to initialise", _toInit.Length);
-            string[] blacklistedCommandClasses = new string[] { "CommandManager", "CommandBase", "CommandPermissionLevel", "CommandSimpleReplyBase" };
-            foreach (Type t in types.Where(a => a.Name.StartsWith("Command") && !blacklistedCommandClasses.Contains(a.Name)))
+            foreach (Type t in _toInit)
             {
                 this.Logger.Log("Initialising command '{0}'", t.FullName);
                 ICommand c = (ICommand)Activator.CreateInstance(t);

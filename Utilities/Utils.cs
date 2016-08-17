@@ -1,4 +1,5 @@
 ﻿using Discord;
+using DiscordBot.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,6 +100,23 @@ namespace DiscordBot.Utilities
         {
             TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
             return (int)t.TotalSeconds;
+        }
+
+        public static bool isUserIgnored(string command, MessageEventArgs e)
+        {
+            if (Program.Instance._config.ignoredUsers.Contains(e.User.Id))
+            {
+                string logMsg = String.Format("Ignoring command '{0}' from user '{1}' [{2}] as they are on the ignore list", command, e.User.Name, e.User.Id);
+
+                if (e.Server == null)
+                    Program.Instance.messageLogger.Log(e.Channel, logMsg, LogLevel.WARNING);
+                else
+                    Program.Instance.serverLogManager.getLoggerForServer(e.Server).Log(e.Channel, logMsg, LogLevel.WARNING);
+
+                Program.Instance.Logger.Log(logMsg, LogLevel.WARNING);
+                return true;
+            }
+            return false;
         }
 
     }
