@@ -11,6 +11,7 @@ namespace DiscordBot.Commands
     {
         public override CommandPermissionLevel getRequiredPermissionLevel()
         {
+            return CommandPermissionLevel.BOT_OWNER;
         }
 
         public override void invoke(MessageEventArgs e, bool pub)
