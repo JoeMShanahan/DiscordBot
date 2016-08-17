@@ -14,7 +14,7 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.BOT_OWNER;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             Program.Instance.commandManager.invokeCommandsFromName("quit", e);
         }

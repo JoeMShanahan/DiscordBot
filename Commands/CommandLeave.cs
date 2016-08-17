@@ -15,7 +15,7 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.SERVER_ADMIN;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             Thread t = new Thread(new ThreadStart(() => runThread(e)));
             t.IsBackground = false;

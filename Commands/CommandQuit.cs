@@ -15,7 +15,7 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.BOT_OWNER;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             //Utils.sendToDebugChannel("User '{0}' [{1}] has requested that I disconnect from discord.", e.User, e.User.Id);
             Program.Instance._config.saveConfig();

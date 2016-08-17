@@ -152,7 +152,7 @@ namespace DiscordBot.Commands
                     }
                     continue;
                 }
-                c.invoke(e, isPublic);
+                c.invoke(e, isPublic, isPhrase);
 
                 /*if (forcePrivate) // Hacky way of making DM replies appear in the log for the user who sent the initial command
                     Program.Instance.messageLogger.Log(e.User, "{0} [{1}]: {2}", Program.Instance.client.CurrentUser.Name, Program.Instance.client.CurrentUser.Name, e.Message.Text);*/
@@ -182,7 +182,7 @@ namespace DiscordBot.Commands
             this.Logger.Log("Attempting to initialise commands");
             if (this._commands.Count > 0)
                 this._commands.Clear();
-            string[] blacklistedCommandClasses = new string[] { "CommandManager", "CommandBase", "CommandPermissionLevel", "CommandSimpleReplyBase", "PhraseCommandBase" };
+            string[] blacklistedCommandClasses = new string[] { "CommandManager", "CommandBase", "CommandPermissionLevel", "CommandSimpleReplyBase", "PhraseCommandBase", "PhraseCommandSimpleReplyBase" };
             Type[] types = Assembly.GetExecutingAssembly().GetTypes();
             Type[] _toInit = types.Where(a => (a.Name.StartsWith("Command") || a.Name.StartsWith("PhraseCommand")) && !blacklistedCommandClasses.Contains(a.Name)).ToArray();
             this.Logger.Log("{0} command(s) to initialise", _toInit.Length);

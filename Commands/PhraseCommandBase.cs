@@ -10,7 +10,7 @@ namespace DiscordBot.Commands
     public abstract class PhraseCommandBase : ICommand
     {
 
-        public abstract void invoke(MessageEventArgs e, bool pub);
+        public abstract void invoke(MessageEventArgs e, bool pub, bool fromPhrase = true);
         public abstract string triggerPattern();
 
 

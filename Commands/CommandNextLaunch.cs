@@ -18,22 +18,22 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.NORMAL_USER;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             e.Channel.SendIsTyping();
-            Thread t = new Thread(new ThreadStart(() => runThread(e, pub)));
+            Thread t = new Thread(new ThreadStart(() => runThread(e, pub, false, fromPhrase)));
             t.Name = "LaunchBot NextLaunch Thread";
             t.IsBackground = true;
             t.Start();
         }
 
-        private void runThread(MessageEventArgs e, bool pub, bool lastLaunch = false)
+        private void runThread(MessageEventArgs e, bool pub, bool lastLaunch = false, bool fromPhrase = false)
         {
 
             bool search = false;
             string searchText = string.Empty;
 
-            if (e.Message.Text.Split(' ').Length > 1)
+            if (e.Message.Text.Split(' ').Length > 1 && !fromPhrase)
             {
                 search = true;
                 searchText = e.Message.Text.Substring(e.Message.Text.Split(' ')[0].Length + 1);
@@ -97,15 +97,20 @@ namespace DiscordBot.Commands
             }
         }
 
-        public void customInvoke(MessageEventArgs e, bool pub) // Writing an essential duplicate of this command just to do the last launch (instead of next) wasn't really a good idea, so I'm hacking it in like any sensible programmer
+        public void customInvoke(MessageEventArgs e, bool pub, bool fromPhrase = false) // Writing an essential duplicate of this command just to do the last launch (instead of next) wasn't really a good idea, so I'm hacking it in like any sensible programmer
         {
 
             e.Channel.SendIsTyping();
-            Thread t = new Thread(new ThreadStart(() => runThread(e, pub, true)));
+            Thread t = new Thread(new ThreadStart(() => runThread(e, pub, true, fromPhrase)));
             t.Name = "LaunchBot NextLaunch Thread";
             t.IsBackground = true;
             t.Start();
 
+        }
+
+        public override string triggerPattern()
+        {
+            return @"%me%,? (when|what)('s| is) the next (rocket )?launch\??";
         }
     }
 }

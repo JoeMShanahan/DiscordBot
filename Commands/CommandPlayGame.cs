@@ -15,7 +15,7 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.BOT_OWNER;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             string game = Program.Instance.funManager.onMessageReceived(e, true);
             Utils.sendToDebugChannel("New Game: {0}", game);

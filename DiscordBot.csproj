@@ -103,7 +103,9 @@
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\PhraseCommandBase.cs" />
     <Compile Include="Commands\PhraseCommandQuit.cs" />
+    <Compile Include="Commands\PhraseCommandSimpleReplyBase.cs" />
     <Compile Include="Commands\PhraseCommandTest.cs" />
+    <Compile Include="Commands\PhraseCommandThanks.cs" />
     <Compile Include="Config\BotConfig.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Extensions\StringBuilderExtensions.cs" />

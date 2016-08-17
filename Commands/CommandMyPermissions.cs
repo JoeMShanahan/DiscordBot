@@ -15,7 +15,7 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.NORMAL_USER;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             CommandPermissionLevel[] perms = Utils.getPermissionsListForUser(e.User, e.Server);
             StringBuilder sb = new StringBuilder();

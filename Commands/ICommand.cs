@@ -10,7 +10,7 @@ namespace DiscordBot.Commands
     public interface ICommand
     {
 
-        void invoke(MessageEventArgs e, bool pub);
+        void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false);
         CommandPermissionLevel getRequiredPermissionLevel();
         int cooldownLength();
         bool goesOnCooldown();

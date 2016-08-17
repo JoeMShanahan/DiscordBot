@@ -14,11 +14,17 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.NORMAL_USER;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub) // This is so hacky! I love it!
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase) // This is so hacky! I love it!
         {
             CommandManager cm = CommandManager.Instance;
             CommandNextLaunch cnl = (CommandNextLaunch)cm._commands.First(c => c.ToString().EndsWith("CommandNextLaunch"));
-            cnl.customInvoke(e, pub);
+            cnl.customInvoke(e, pub, fromPhrase);
         }
+
+        public override string triggerPattern()
+        {
+            return @"%me%,? what (is|was) the last (rocket )?launch\??";
+        }
+
     }
 }

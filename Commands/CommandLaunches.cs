@@ -18,7 +18,7 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.NORMAL_USER;
         }
 
-        public void customInvoke(MessageEventArgs e, bool pub, bool past = false)
+        public void customInvoke(MessageEventArgs e, bool pub, bool past = false, bool fromPhrase = false)
         {
             Thread t = new Thread(new ThreadStart(() => runThread(e, pub, past)));
             t.Name = "LaunchBot Launches thread";
@@ -26,13 +26,13 @@ namespace DiscordBot.Commands
             t.Start();
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             e.Channel.SendIsTyping();
-            customInvoke(e, pub);
+            customInvoke(e, pub, false, fromPhrase);
         }
 
-        private void runThread(MessageEventArgs e, bool pub, bool past) // I was orignally going to hack this into CommandNextLaunch but decided against it.
+        private void runThread(MessageEventArgs e, bool pub, bool past, bool fromPhrase = false) // I was orignally going to hack this into CommandNextLaunch but decided against it.
         {
 
             int limit = 5;
@@ -73,6 +73,11 @@ namespace DiscordBot.Commands
 
         }
 
+
+        public override string triggerPattern()
+        {
+            return @"%me%,? (give|show) me (a list of|some) upcoming launches";
+        }
 
     }
 }

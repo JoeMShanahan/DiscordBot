@@ -10,7 +10,7 @@ namespace DiscordBot.Commands
     public abstract class CommandBase : ICommand // I know we don't need to implement the interface here, I do it just to make sure I have all the methods in the base class.
     {
         public abstract CommandPermissionLevel getRequiredPermissionLevel();
-        public abstract void invoke(MessageEventArgs e, bool pub);
+        public abstract void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false);
 
         public virtual bool goesOnCooldown()
         {

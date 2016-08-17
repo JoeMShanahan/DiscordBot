@@ -7,27 +7,24 @@ using Discord;
 
 namespace DiscordBot.Commands
 {
-    public class CommandSimpleReplyBase : ICommand
+    public class PhraseCommandSimpleReplyBase : ICommand
     {
 
-        public string reply = string.Empty;
-        public bool alwaysPub = false;
+        string reply = string.Empty;
 
-        public CommandSimpleReplyBase(string reply) : this(reply, false) { }
-        public CommandSimpleReplyBase(string reply, bool alwaysPub)
+        public PhraseCommandSimpleReplyBase(string reply)
         {
             this.reply = reply;
-            this.alwaysPub = alwaysPub;
         }
 
         public virtual int cooldownLength()
         {
-            return Program.Instance._config.commandCooldownSecs;
+            throw new NotImplementedException();
         }
 
         public virtual string[] getCommandAliases()
         {
-            return new string[0];
+            throw new NotImplementedException();
         }
 
         public virtual CommandPermissionLevel getRequiredPermissionLevel()
@@ -40,12 +37,9 @@ namespace DiscordBot.Commands
             return true;
         }
 
-        public virtual void invoke(MessageEventArgs e, bool pub, bool fromPhrase)
+        public virtual void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
-            if (alwaysPub || pub)
-                e.Channel.SendMessage(this.reply);
-            else
-                e.User.SendMessage(this.reply);
+            e.Channel.SendMessage(this.reply);
         }
 
         public virtual string triggerPattern()

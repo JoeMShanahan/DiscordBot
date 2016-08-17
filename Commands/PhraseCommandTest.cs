@@ -14,7 +14,7 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.BOT_OWNER;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             e.Channel.SendMessage(String.Format("Test received, {0}", e.User.Mention));
         }

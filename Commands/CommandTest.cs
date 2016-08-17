@@ -14,7 +14,7 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.NORMAL_USER;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             e.Channel.SendMessage("Received.");
         }

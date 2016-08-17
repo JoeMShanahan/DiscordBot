@@ -15,7 +15,7 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.BOT_OWNER;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase)
         {
             string command = e.Message.Text.Split(' ')[1].ToLower();
             string reply = "";

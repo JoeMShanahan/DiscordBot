@@ -14,7 +14,7 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.BOT_OWNER;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             //Program.Instance.client.SetGame(new Game("Launch Schedule Simulator", GameType.Twitch, "https://ipeer.auron.co.uk/launchschedule/"));
             try

@@ -16,7 +16,7 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.BOT_OWNER;
         }
 
-        public override void invoke(MessageEventArgs e, bool pub)
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             string @params = e.Message.RawText.Substring(e.Message.RawText.Split(' ')[0].Length + 1);
             string regex = @params.Split('|')[0];
