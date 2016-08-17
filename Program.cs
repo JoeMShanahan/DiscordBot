@@ -25,6 +25,7 @@ namespace DiscordBot
         public Logger Logger { get; private set; }
         public CommandManager commandManager { get; private set; }
         public ServerLogManager serverLogManager { get; private set; }
+        public MessageLogger messageLogger { get; private set; }
         public FunManager funManager { get; private set; }
 
         static void Main(string[] args)
@@ -67,6 +68,9 @@ namespace DiscordBot
                 this.Logger.Log("Initialising ServerLogManager");
                 this.serverLogManager = new ServerLogManager();
 
+                this.Logger.Log("Setting up DM logger");
+                this.messageLogger = new MessageLogger(Path.Combine(Utils.getApplicationEXEFolderPath(), "logs", "DMs"));
+
                 this.Logger.Log("Initialising CommandManager");
                 // Set up command manager
                 this.commandManager = new CommandManager();
@@ -92,6 +96,9 @@ namespace DiscordBot
                 this.client.UserJoined += (s, e) => UserJoinedOrLeft(s, e, true);
                 this.client.UserLeft += (s, e) => UserJoinedOrLeft(s, e, false);
                 this.client.UserUpdated += UserUpdated;
+                /*this.client.MessageSent += MessageSent;
+                this.client.MessageAcknowledged += MessageSent;*/ // <-- This and the one above it do NOTHING. They're not even implemented in the library
+                this.client.MessageUpdated += MessageUpdated;
 
                 this.client.ExecuteAndWait(async () =>
                 {
@@ -110,23 +117,45 @@ namespace DiscordBot
             }
         }
 
+        private void MessageUpdated(object sender, MessageUpdatedEventArgs e)
+        {
+            bool isDM = e.Server == null;
+
+            if (isDM)
+            { // Private messages
+
+                this.messageLogger.Log(e.Channel, "{0} [{1}] updated message '{2}' to '{3}'", e.User.Name, e.User.Id, e.Before.Text, e.After.Text);
+            }
+            else
+            {
+                this.serverLogManager.getLoggerForServerID(e.Server.Id).Log(e.Channel, "{0} [{1}] updated message '{2}' to '{3}' in channel '{4}' [{5}] on server '{6}' [{7}]", e.User.Name, e.User.Id, e.Before.Text, e.After.Text, e.Channel.Name, e.Channel.Id, e.Server.Name, e.Server.Id);
+            }
+        }
+
+        private void MessageSent(object sender, MessageEventArgs e)
+        {
+            // This is only used to log replies in private messages to the correct place
+            Console.WriteLine("Message sent ping");
+            Utils.sendToDebugChannel("{0} // {1}: {2}", e.User.Name, e.User.Id, e.Message.Text);
+        }
+
         private void UserUpdated(object sender, UserUpdatedEventArgs e)
         {
-            ServerLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
+            MessageLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
             string logMsg = String.Format("Update on user '{0}' [{1}] from server '{3}' [{4}]: {2}", e.Before.Name, e.Before.Id, String.Format("{0} -> {1}, {2} -> {3}, {4} -> {5}, {6} -> {7}", e.Before.Name, e.After.Name, e.Before.Nickname, e.After.Nickname, e.Before.CurrentGame.GetValueOrDefault().Name, e.After.CurrentGame.GetValueOrDefault().Name, e.Before.Status.ToString(), e.After.Status.ToString()), e.Server.Name, e.Server.Id);
             sl.Log(logMsg);
         }
 
         private void UserJoinedOrLeft(object sender, UserEventArgs e, bool isJoin)
         {
-            ServerLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
+            MessageLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
             string logMsg = String.Format("{2} -> '{0}' [{1}]", e.User.Name, e.User.Id, isJoin?"JOIN":"LEAVE");
             sl.Log(logMsg);
         }
 
         private void ServerUnavailable(object sender, ServerEventArgs e) // Fires if the bot is no longer authorised to be on the server (I think) - We also use it to handle when the bot leaves a server
         {
-            ServerLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
+            MessageLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
             string logMsg = String.Format("Server unavailable: '{0}' [{1}]", e.Server.Name, e.Server.Id);
             sl.Log(logMsg);
             this.Logger.Log(logMsg);
@@ -135,7 +164,7 @@ namespace DiscordBot
 
         private void ServerAvailable(object sender, ServerEventArgs e)
         {
-            ServerLogger sl = this.serverLogManager.createLoggerForServer(e.Server);
+            MessageLogger sl = this.serverLogManager.createLoggerForServer(e.Server);
             string logMsg = String.Format("Server available: '{0}' [{1}]", e.Server.Name, e.Server.Id);
             sl.Log(logMsg);
             this.Logger.Log(logMsg);
@@ -143,7 +172,7 @@ namespace DiscordBot
 
         private void JoinedServer(object sender, ServerEventArgs e)
         {
-            ServerLogger sl = this.serverLogManager.createLoggerForServer(e.Server);
+            MessageLogger sl = this.serverLogManager.createLoggerForServer(e.Server);
             string logMsg = String.Format("Joined server '{0}' [{1}]", e.Server.Name, e.Server.Id);
             sl.Log(logMsg);
             this.Logger.Log(logMsg);
@@ -172,11 +201,20 @@ namespace DiscordBot
         private void MessageReceived(object sender, MessageEventArgs e)
         {
             this.funManager.onMessageReceived(e);
-            this.serverLogManager.getLoggerForServerID(e.Server.Id).Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
+            bool isDM = e.Server == null;
+
+            if (isDM)
+            { // Private messages
+
+                this.messageLogger.Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
+            }
+            else
+            {
+                this.serverLogManager.getLoggerForServerID(e.Server.Id).Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
 #if DEBUG
             this.Logger.Log("[{0}] {1} [{4}]@{3}: {2}", e.Server, e.User, e.Message.Text, e.Channel, e.User.Id);
 #endif
-
+            }
             if (this._config.commandTriggerCharacters.Contains(e.Message.Text.Substring(0, 1)))
             {
 
@@ -184,13 +222,18 @@ namespace DiscordBot
                 if (this._config.ignoredUsers.Contains(e.User.Id))
                 {
                     string logMsg = String.Format("Ignoring command '{0}' from user '{1}' [{2}] as they are on the ignore list", command, e.User.Name, e.User.Id);
-                    this.serverLogManager.getLoggerForServer(e.Server).Log(e.Channel, logMsg, LogLevel.WARNING);
+
+                    if (isDM)
+                        this.messageLogger.Log(e.Channel, logMsg, LogLevel.WARNING);
+                    else
+                        this.serverLogManager.getLoggerForServer(e.Server).Log(e.Channel, logMsg, LogLevel.WARNING);
+
                     this.Logger.Log(logMsg, LogLevel.WARNING);
                     return;
                 }
-                this.commandManager.invokeCommandsFromName(command, e);
+                this.commandManager.invokeCommandsFromName(command, e, isDM);
             }
-            else if (e.Message.Text.Contains("unacceptable") && e.Server.Id == 213292578093793282)
+            else if (!isDM && e.Message.Text.Contains("unacceptable") && e.Server.Id == 213292578093793282)
             {
                 e.Channel.SendMessage("https://www.youtube.com/watch?v=aaSRYecKaqc");
             }

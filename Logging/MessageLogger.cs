@@ -14,27 +14,29 @@ namespace DiscordBot.Logging
     // This class is not created to enable the bot owners to "spy" on users of the bot and is purely in place to allow owners to track down and take action against bot abuse or address issues with bot behaviour caused by bugs or glitches.
     // For more information, please see https://github.com/iPeer/DiscordBot/blob/master/Privacy.md
 
-    public class ServerLogger
+    public class MessageLogger
     {
 
         public string logDir = string.Empty;
 
-        public ServerLogger(Server s)
-        {
+        public MessageLogger(Server s) : this(Path.Combine(Utils.getApplicationEXEFolderPath(), "logs", "servers", String.Format("{0} [{1}]", s.Name, s.Id))) { }
 
+        public MessageLogger(string directoryPath)
+        {
             // Create the folders for this server
 
             // main server folder
 
             // Note that we put the ID of the server in the folder name. This is to help find servers that change their names.
             // We could just use the server ID for foldername, but that makes finding a specific server difficult. The same formatting is used for channel log files.
-            this.logDir = Path.Combine(Utils.getApplicationEXEFolderPath(), "logs", "servers", String.Format("{0} [{1}]", s.Name, s.Id));
+            this.logDir = directoryPath;
             Directory.CreateDirectory(this.logDir);
-
         }
 
         public void Log(Channel c, string message, LogLevel level, params object[] fillers) { Log(String.Format("{0} [{1}]", c.Name, c.Id), message, level, fillers); }
         public void Log(Channel c, string message, params object[] fillers) { Log(String.Format("{0} [{1}]", c.Name, c.Id), message, LogLevel.INFO, fillers); }
+        //public void Log(User u, string message, LogLevel level, params object[] fillers) { if (u.Id == Program.Instance.client.CurrentUser.Id) { return; }; Log(String.Format("{0} [{1}]", u.Name, u.Id), message, level, fillers); }
+        //public void Log(User u, string message, params object[] fillers) { if (u.Id == Program.Instance.client.CurrentUser.Id) { return; }; Log(String.Format("{0} [{1}]", u.Name, u.Id), message, LogLevel.INFO, fillers); }
         public void Log(string message, params object[] fillers) { Log("server", message, LogLevel.INFO, fillers); }
         public void Log(string channel, string message, params object[] fillers) { Log(channel, message, LogLevel.INFO, fillers); }
         public void Log(string fileName, string message, LogLevel level, params object[] fillers)

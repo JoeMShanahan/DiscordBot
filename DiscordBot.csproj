@@ -96,6 +96,7 @@
     <Compile Include="Commands\CommandPlayGame.cs" />
     <Compile Include="Commands\CommandQuit.cs" />
     <Compile Include="Commands\CommandSetGame.cs" />
+    <Compile Include="Commands\CommandSimpleReplyBase.cs" />
     <Compile Include="Commands\CommandSuperStrypi.cs" />
     <Compile Include="Commands\CommandTest.cs" />
     <Compile Include="Commands\ICommand.cs" />
@@ -107,7 +108,7 @@
     <Compile Include="Fun\FunModuleBase.cs" />
     <Compile Include="Fun\IFunModule.cs" />
     <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Logging\ServerLogger.cs" />
+    <Compile Include="Logging\MessageLogger.cs" />
     <Compile Include="Logging\ServerLogManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

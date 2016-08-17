@@ -7,16 +7,11 @@ using Discord;
 
 namespace DiscordBot.Commands
 {
-    public class CommandIsSuchAThingEvenPossible : CommandBase, ICommand
+    public class CommandIsSuchAThingEvenPossible : CommandSimpleReplyBase, ICommand
     {
-        public override CommandPermissionLevel getRequiredPermissionLevel()
-        {
-            return CommandPermissionLevel.NORMAL_USER;
-        }
 
-        public override void invoke(MessageEventArgs e, bool pub)
-        {
-            e.Channel.SendMessage("https://i.imgur.com/iXtChhJ.gifv");
-        }
+        public CommandIsSuchAThingEvenPossible() : base("https://i.imgur.com/iXtChhJ.gifv", true) { }
+
     }
+
 }

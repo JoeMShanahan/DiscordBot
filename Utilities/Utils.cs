@@ -18,11 +18,16 @@ namespace DiscordBot.Utilities
 
         public static bool userIsServerAdmin(User user)
         {
-            return user.ServerPermissions.Administrator;
+            try
+            {
+                return user.ServerPermissions.Administrator;
+            }
+            catch { return false; }
         }
 
         public static bool userIsServerOwner(User user, Server s)
         {
+            if (s == null) return false;
             return s.Owner == user;
         }
 
@@ -43,6 +48,7 @@ namespace DiscordBot.Utilities
         public static Commands.CommandPermissionLevel getCommandPermissionlevelForUser(User u, Server s)
         {
             if (userIsOwner(u)) { return Commands.CommandPermissionLevel.BOT_OWNER; }
+            else if (s == null) { return Commands.CommandPermissionLevel.NORMAL_USER; }
             else if (userIsServerOwner(u, s)) { return Commands.CommandPermissionLevel.SERVER_OWNER; }
             else if (userIsServerAdmin(u)) { return Commands.CommandPermissionLevel.SERVER_ADMIN; }
             else return Commands.CommandPermissionLevel.NORMAL_USER;

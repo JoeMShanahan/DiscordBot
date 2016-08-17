@@ -18,7 +18,7 @@ namespace DiscordBot.Logging
     public class ServerLogManager
     {
 
-        public Dictionary<ulong, ServerLogger> _loggers = new Dictionary<ulong, ServerLogger>();
+        public Dictionary<ulong, MessageLogger> _loggers = new Dictionary<ulong, MessageLogger>();
         public static ServerLogManager Instance { get; private set; }
         public Logger Logger { get; private set; }
 
@@ -28,7 +28,7 @@ namespace DiscordBot.Logging
             this.Logger = new Logger("ServerLogManager");
         }
 
-        public ServerLogger createLoggerForServer(Server s)
+        public MessageLogger createLoggerForServer(Server s)
         {
             if (this._loggers.ContainsKey(s.Id))
             {
@@ -36,7 +36,7 @@ namespace DiscordBot.Logging
                 return this._loggers[s.Id];
             }
             this.Logger.Log("Creating server logger for server '{0}' [{1}]", s.Name, s.Id);
-            ServerLogger sl = new ServerLogger(s);
+            MessageLogger sl = new MessageLogger(s);
             this._loggers.Add(s.Id, sl);
             return sl;
         }
@@ -47,7 +47,7 @@ namespace DiscordBot.Logging
             this._loggers.Remove(id);
         }
 
-        public ServerLogger getLoggerForServerID(ulong id)
+        public MessageLogger getLoggerForServerID(ulong id)
         {
             if (this._loggers.ContainsKey(id))
             {
@@ -59,7 +59,7 @@ namespace DiscordBot.Logging
             }
         }
 
-        public ServerLogger getLoggerForServer(Server server)
+        public MessageLogger getLoggerForServer(Server server)
         {
             return getLoggerForServerID(server.Id);
         }

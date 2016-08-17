@@ -27,5 +27,10 @@ namespace DiscordBot.Commands
             if (pub) e.Channel.SendMessage(sb.ToString());
             else e.User.SendMessage(sb.ToString());
         }
+
+        public override string[] getCommandAliases()
+        {
+            return new string[] { "myperms", "perms", "permslist" };
+        }
     }
 }
