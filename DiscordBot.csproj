@@ -82,8 +82,10 @@
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\CommandConfig.cs" />
     <Compile Include="Commands\CommandIgnore.cs" />
+    <Compile Include="Commands\CommandIsSuchAThingEvenPossible.cs" />
     <Compile Include="Commands\CommandLastLaunch.cs" />
     <Compile Include="Commands\CommandLaunches.cs" />
+    <Compile Include="Commands\CommandLaunchSchedule.cs" />
     <Compile Include="Commands\CommandLeave.cs" />
     <Compile Include="Commands\CommandLeaveServer.cs" />
     <Compile Include="Commands\CommandListCommands.cs" />
@@ -91,6 +93,7 @@
     <Compile Include="Commands\CommandManager.cs" />
     <Compile Include="Commands\CommandMyPermissions.cs" />
     <Compile Include="Commands\CommandNextLaunch.cs" />
+    <Compile Include="Commands\CommandPlayGame.cs" />
     <Compile Include="Commands\CommandQuit.cs" />
     <Compile Include="Commands\CommandSetGame.cs" />
     <Compile Include="Commands\CommandSuperStrypi.cs" />

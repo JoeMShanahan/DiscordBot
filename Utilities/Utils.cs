@@ -60,7 +60,8 @@ namespace DiscordBot.Utilities
                 Console.WriteLine("{0} {1}", debug_server, debug_channel);
                 debug_channel.SendMessage(message.ToString());
             }
-            catch { Console.WriteLine("Cannot send messages to debug channel because it wasn't found."); }
+            catch (NullReferenceException) { Console.WriteLine("Cannot send messages to debug channel because it wasn't found."); }
+            catch (Exception _e) { Console.WriteLine("A message couldn't be sent to the debug channel because an exception occurred: {0}", _e.Message); }
         }
 
         public static string getWebPage(string address, bool ignoreCerts = false, SecurityProtocolType prot = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3)

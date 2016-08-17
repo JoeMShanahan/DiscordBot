@@ -1,6 +1,7 @@
 ﻿using Discord;
 using DiscordBot.Extensions;
 using DiscordBot.Logging;
+using DiscordBot.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,45 +52,42 @@ namespace DiscordBot.Fun
             //this.Logger.Log("Let's go have fun, Niko!");
         }
 
-        public void onMessageReceived(MessageEventArgs e)
+        public string onMessageReceived(MessageEventArgs e, bool forced = false)
         {
 
             Random r = new Random();
             int _newGame = r.RealNext(100);
             //this.Logger.Log("{0}", _newGame);
-            if (_newGame <= newGameMagicNumber) // N% chance hit, pick a new game (or not)
+            if (_newGame <= newGameMagicNumber || forced) // N% chance hit, pick a new game (or not)
             {
                 //this.Logger.Log("Random chance on GameChance was hit -- {0}", DateTime.Compare(this.startedPlaying.AddMinutes(_gamePlayingGraceMinutes), DateTime.Now));
-                if (DateTime.Compare(this.startedPlaying.AddMinutes(_gamePlayingGraceMinutes), DateTime.Now) < 1)
+                if (this.isPlayingGame && DateTime.Compare(this.startedPlaying.AddMinutes(_gamePlayingGraceMinutes), DateTime.Now) < 1 || forced)
                 {
-                    this.startedPlaying = DateTime.Now;
-                    if (this.isPlayingGame)
+                    int whatDo = (new Random(Utils.getEpochTime())).RealNext(1, 10); // If this is >= 5, we do nothing
+                    if (whatDo == 1) { this.Logger.Log("Stopped playing"); Program.Instance.client.SetGame(null); this.isPlayingGame = false; } // 10%, stop "playing"
+                    else if (whatDo >= 2 && whatDo < 5) // 40%, pick a new game
                     {
-                        int whatDo = (new Random()).RealNext(1, 10); // If this is >= 5, we do nothing
-                        if (whatDo == 1) { this.Logger.Log("Stopped playing"); Program.Instance.client.SetGame(null); this.isPlayingGame = false; } // 10%, stop "playing"
-                        else if (whatDo >= 2 && whatDo < 5) // 40%, pick a new game
-                        {
-                            setRandomGame();
-                        }
-                        // else do nothing
+                        return setRandomGame();
                     }
-                    else
-                    {
-                        this.isPlayingGame = true;
-                        setRandomGame();    
-                    }
-
+                    // else do nothing
+                }
+                else if (!this.isPlayingGame)
+                {
+                    this.isPlayingGame = true;
+                    return setRandomGame();
                 }
 
             }
-
+            return string.Empty;
         }
 
-        private void setRandomGame()
+        private string setRandomGame()
         {
-            string game = _gameNames[(new Random()).Next(_gameNames.Length)];
+            this.startedPlaying = DateTime.Now;
+            string game = _gameNames[new Random(Utils.getEpochTime()).Next(_gameNames.Length)];
             this.Logger.Log("Now playing: {0}", game);
             Program.Instance.client.SetGame(new Game(game));
+            return game;
         }
 
 
