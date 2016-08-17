@@ -190,6 +190,10 @@ namespace DiscordBot
                 }
                 this.commandManager.invokeCommandsFromName(command, e);
             }
+            else if (e.Message.Text.Contains("unacceptable") && e.Server.Id == 213292578093793282)
+            {
+                e.Channel.SendMessage("https://www.youtube.com/watch?v=aaSRYecKaqc");
+            }
         }
     }
 }
