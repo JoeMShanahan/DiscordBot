@@ -122,8 +122,7 @@ namespace DiscordBot.Logging
 #endif
 
                 // Write the juicy goodness to file
-
-                using (StreamWriter w = File.AppendText(this.LogPath))
+                using (StreamWriter w = new StreamWriter(this.LogPath, true, Encoding.UTF8))
                 {
                     w.WriteLine(@string);
                 }
