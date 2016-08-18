@@ -19,12 +19,12 @@ namespace DiscordBot.Commands
 
         public virtual int cooldownLength()
         {
-            throw new NotImplementedException();
+            return Program.Instance._config.commandCooldownSecs;
         }
 
         public virtual string[] getCommandAliases()
         {
-            throw new NotImplementedException();
+            return new string[0];
         }
 
         public virtual CommandPermissionLevel getRequiredPermissionLevel()
