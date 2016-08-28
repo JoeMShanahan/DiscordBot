@@ -26,5 +26,10 @@ namespace DiscordBot.Commands
             return @"%me%,? what (is|was) the last (rocket )?launch\??";
         }
 
+        public override string[] getCommandAliases()
+        {
+            return new string[] { "ll" };
+        }
+
     }
 }

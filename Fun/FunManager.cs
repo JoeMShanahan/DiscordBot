@@ -13,13 +13,14 @@ namespace DiscordBot.Fun
     public class FunManager
     {
 
-        // These are mostly sattire, but there's some legit games in here too
+        // These are mostly satire, but there's some legit games in here too
+        // ^ let's be honest, they're mostly legit, with a few satire
         private string[] _gameNames = new string[] {
             "Kerbal Space Program",
             "Launch Schedule Simulator 2016",
             "Elite: Dangerous",
             //"010100110111000001100001011000010110000101100001011000110110010100100001", <- not a game
-            "0011010000110010", // <- not a game
+            //"0011010000110010", // <- not a game
             "Universe Sandbox 2",
             "Euro Truck Simulator 2",
             "American Truck Simulator",
@@ -28,10 +29,24 @@ namespace DiscordBot.Fun
             "The Price Is Right",
             "No Man's Sky",
             "Half-Life 3", // How can you not have a random game easter egg that doesn't have HL3 in it?
-            "With Fire",
+            "with Fire",
             "Doctor",
             "Theme Hospital", // Hospital administrator is TOTALLY cheating
-            "Bowling with Roman"
+            "Bowling with Roman",
+            "The Elder Scrolls V: Skyrim",
+            "Rocket League",
+            "Team Fortress 2",
+            "in the woods",
+            "in the rain",
+            "with Regul[ea]r Expre(s){2}ions",
+            "Pokémon Blue",
+            "Pokémon Red",
+            "Pokémon Yellow",
+            "Minecraft",
+            "Fallout Shelter",
+            "Deus Ex: Mankind Divided",
+            "Spot the Difference",
+            "I Spy with My Little Eye"
         };
 
         private bool isPlayingGame = false;

@@ -16,8 +16,9 @@ namespace DiscordBot.Commands
         NORMAL_USER = 0,
         SERVER_ADMIN = 1,
         SERVER_OWNER = 2,
-        BOT_OWNER = 3,
-        TEST = 4 // Nobody has this level. It's for testing invalid permissions!
+        BOT_ADMIN = 3,
+        BOT_OWNER = 4,
+        TEST = 5 // Nobody has this level. It's for testing invalid permissions!
     }
 
     public class CommandManager
@@ -42,6 +43,9 @@ namespace DiscordBot.Commands
         };*/
         public Dictionary<Server, Dictionary<ICommand, DateTime>> _cooldowns = new Dictionary<Server, Dictionary<ICommand, DateTime>>();
         public Dictionary<User, Dictionary<ICommand, DateTime>> _userCooldowns = new Dictionary<User, Dictionary<ICommand, DateTime>>();
+
+        public long commandsTriggered = 0L;
+        public long phraseCommandsTriggered = 0L;
 
         public static CommandManager Instance { get; private set; }
 
@@ -167,6 +171,7 @@ namespace DiscordBot.Commands
         {
             if (Utils.isUserIgnored(name, e)) { return; }
             List<ICommand> _toInvoke = _commands.FindAll(c => c.ToString().ToLower().Substring(c.ToString().LastIndexOf(".") + 8).Equals(name.ToLower()) || c.getCommandAliases().Contains(name.ToLower())); // All command clases start with "Command", so we have to make sure we strip that when checking for matching command names
+            this.commandsTriggered += _toInvoke.Count;
             manageCommandInvokes(_toInvoke.ToArray(), e, forcePrivate);
         }
 
@@ -174,6 +179,7 @@ namespace DiscordBot.Commands
         {
             if (Utils.isUserIgnored("PHRASE_COMMAND", e)) { return; }
             List<ICommand> _toinvoke = _commands.FindAll(c => !c.triggerPattern().Equals(string.Empty) && Regex.IsMatch(e.Message.RawText, c.triggerPattern().Replace("%me%", String.Format("<@{0}>", Program.Instance.client.CurrentUser.Id)), RegexOptions.IgnoreCase));
+            this.phraseCommandsTriggered += _toinvoke.Count;
             manageCommandInvokes(_toinvoke.ToArray(), e, false, true);
         }
 

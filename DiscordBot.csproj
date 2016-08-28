@@ -98,6 +98,7 @@
     <Compile Include="Commands\CommandRegexTest.cs" />
     <Compile Include="Commands\CommandSetGame.cs" />
     <Compile Include="Commands\CommandSimpleReplyBase.cs" />
+    <Compile Include="Commands\CommandStats.cs" />
     <Compile Include="Commands\CommandSuperStrypi.cs" />
     <Compile Include="Commands\CommandTest.cs" />
     <Compile Include="Commands\ICommand.cs" />

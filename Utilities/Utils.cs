@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Utilities
 {
+
+    public class DebugServerNotFoundException : Exception { }
+    public class DebugChannelNotFoundException : Exception { }
+
     public static class Utils
     {
 
@@ -36,8 +40,8 @@ namespace DiscordBot.Utilities
         {
 
             List<Commands.CommandPermissionLevel> _perms = new List<Commands.CommandPermissionLevel>();
-
             if (userIsOwner(u)) { _perms.Add(Commands.CommandPermissionLevel.BOT_OWNER); }
+            if (getDebugServer().Users.Contains(u) && getDebugServer().Users.First(a => a.Id == u.Id).Roles.Contains(getDebugServer().Roles.First(r => r.Name.Equals("Bot Admin")))) { _perms.Add(Commands.CommandPermissionLevel.BOT_ADMIN); } // Crikey
             if (userIsServerOwner(u, s)) { _perms.Add(Commands.CommandPermissionLevel.SERVER_OWNER); }
             if (userIsServerAdmin(u)) { _perms.Add(Commands.CommandPermissionLevel.SERVER_ADMIN); }
             _perms.Add(Commands.CommandPermissionLevel.NORMAL_USER);
@@ -49,10 +53,36 @@ namespace DiscordBot.Utilities
         public static Commands.CommandPermissionLevel getCommandPermissionlevelForUser(User u, Server s)
         {
             if (userIsOwner(u)) { return Commands.CommandPermissionLevel.BOT_OWNER; }
+            if (getDebugServer().Users.Contains(u) && getDebugServer().Users.First(a => a.Id == u.Id).Roles.Contains(getDebugServer().Roles.First(r => r.Name.Equals("Bot Admin")))) { return Commands.CommandPermissionLevel.BOT_ADMIN; }
             else if (s == null) { return Commands.CommandPermissionLevel.NORMAL_USER; }
             else if (userIsServerOwner(u, s)) { return Commands.CommandPermissionLevel.SERVER_OWNER; }
             else if (userIsServerAdmin(u)) { return Commands.CommandPermissionLevel.SERVER_ADMIN; }
             else return Commands.CommandPermissionLevel.NORMAL_USER;
+        }
+
+        public static Server getDebugServer()
+        {
+            try
+            {
+                return Program.Instance.client.Servers.First(s => s.Name.Equals(Program.Instance._config.debugChannelServerName));
+            }
+            catch
+            {
+                throw new DebugServerNotFoundException();
+            }
+        }
+
+        public static Channel getDebugChannel()
+        {
+            try
+            {
+                return getDebugServer().TextChannels.First(c => c.Name.Equals(Program.Instance._config.debugChannelName));
+            }
+            catch (DebugServerNotFoundException e) { throw e; }
+            catch
+            {
+                throw new DebugChannelNotFoundException();
+            }
         }
 
         public static void sendToDebugChannel(string format, params object[] replacers)
@@ -62,11 +92,13 @@ namespace DiscordBot.Utilities
 
             try
             {
-                Server debug_server = Program.Instance.client.Servers.First(s => s.Name.Equals(Program.Instance._config.debugChannelServerName));
-                Channel debug_channel = debug_server.TextChannels.First(c => c.Name.Equals(Program.Instance._config.debugChannelName));
+                Server debug_server = getDebugServer();
+                Channel debug_channel = getDebugChannel();
                 Console.WriteLine("{0} {1}", debug_server, debug_channel);
                 debug_channel.SendMessage(message.ToString());
             }
+            catch (DebugServerNotFoundException) { Console.WriteLine("Cannot send message to debug channel because the debug server was not found"); }
+            catch (DebugChannelNotFoundException) { Console.WriteLine("Cannot send message to debug channel because the specified channel was not found"); }
             catch (NullReferenceException) { Console.WriteLine("Cannot send messages to debug channel because it wasn't found."); }
             catch (Exception _e) { Console.WriteLine("A message couldn't be sent to the debug channel because an exception occurred: {0}", _e.Message); }
         }
@@ -117,6 +149,20 @@ namespace DiscordBot.Utilities
                 return true;
             }
             return false;
+        }
+
+        // Not my code!
+        static readonly string[] SizeSuffixes =
+                   { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+        public static string FormatBytes(Int64 value)
+        {
+            if (value < 0) { return "-" + FormatBytes(-value); }
+            if (value == 0) { return "0.0 bytes"; }
+
+            int mag = (int)Math.Log(value, 1024);
+            decimal adjustedSize = (decimal)value / (1L << (mag * 10));
+
+            return string.Format("{0:n1} {1}", adjustedSize, SizeSuffixes[mag]);
         }
 
     }
