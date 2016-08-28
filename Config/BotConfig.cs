@@ -26,7 +26,7 @@ namespace DiscordBot.Config
 
         public int commandCooldownSecs { get; set; } = 30; // How long does a command go on cooldown for after being used? (per server)
 
-        public bool useDebugChannel { get; set; } = true; // SAhould the bot make use of a debug channel for information or error logging?
+        public bool useDebugChannel { get; set; } = true; // Should the bot make use of a debug channel for information or error logging?
 
         public string debugChannelServerName { get; set; } = "SERVER.NAME.THE.DEBUG.CHANNEL.IS.ON"; // The name of the server that the debug channel is located on
 
@@ -39,6 +39,8 @@ namespace DiscordBot.Config
         public string publicRepyCommandCharacters { get; set; } = "~#$"; // Which of the above command characters are treated as "public" commands (replies sent to channel, not DM)? Note that characters listed here, but not in COMMAND_CHARACTERS will have no effect.
 
         public bool debugAnnounceCooldownChanges { get; set; } = false; // Should the bot announce when a command goes on cooldown in the debug channel? Defaults to false because it's spammy. Useful for begugging commands that aren't working.
+
+        public bool logUserUpdates { get; set; } = false; // Should we log user update events? Set to false because it can be very spammy on large servers
 
         public void saveConfig()
         {

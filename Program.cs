@@ -141,6 +141,7 @@ namespace DiscordBot
 
         private void UserUpdated(object sender, UserUpdatedEventArgs e)
         {
+            if (!this._config.logUserUpdates) { return; }
             MessageLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
             string logMsg = String.Format("Update on user '{0}' [{1}] from server '{3}' [{4}]: {2}", e.Before.Name, e.Before.Id, String.Format("{0} -> {1}, {2} -> {3}, {4} -> {5}, {6} -> {7}", e.Before.Name, e.After.Name, e.Before.Nickname, e.After.Nickname, e.Before.CurrentGame.GetValueOrDefault().Name, e.After.CurrentGame.GetValueOrDefault().Name, e.Before.Status.ToString(), e.After.Status.ToString()), e.Server.Name, e.Server.Id);
             sl.Log(logMsg);
