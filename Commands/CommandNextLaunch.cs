@@ -87,7 +87,29 @@ namespace DiscordBot.Commands
                 string timeStamp = LaunchUtils.getFormattedTime(json, out date);
                 string final = String.Format("{0}/{1} — {2} {3}", vehicle, payload, date, timeStamp);
                 b.AppendFormattedLine((search ? "\t" : "") + final);
-                b.AppendFormattedLine((search ? "\t" : "")+"From {0}", location);
+                if (search)
+                    b.Append("\t");
+                if (json["windowopens"] != json["windowcloses"])
+                {
+                    DateTime winClose = DateTime.Parse(json["windowcloses"].ToString());
+                    DateTime winOpen = DateTime.Parse(json["windowopens"].ToString());
+
+                    string close = String.Format("{0:00}:{1:00}:{2:00}", winClose.Hour, winClose.Minute, winClose.Second);
+                    if (close.EndsWith(":00"))
+                        close = close.Substring(0, close.Length - 3);
+
+                    string open = String.Format("{0:00}:{1:00}:{2:00}", winOpen.Hour, winOpen.Minute, winOpen.Second);
+                    if (open.EndsWith(":00"))
+                        open = open.Substring(0, open.Length - 3);
+
+                    TimeSpan dif = winClose - winOpen;
+                    string winDif = String.Format("{0:00}:{1:00}:{2:00}", dif.TotalHours, dif.Minutes, dif.Seconds);
+                    if (winDif.EndsWith(":00"))
+                        winDif = winDif.Substring(0, winDif.Length - 3);
+
+                    b.AppendFormat("Window: {0}—{1} UTC ({2})\t\t", open, close, winDif);
+                }
+                b.AppendFormat("From {0}", location);
 
                 e.Channel.SendMessage(b.ToString());
             }
@@ -111,6 +133,11 @@ namespace DiscordBot.Commands
         public override string triggerPattern()
         {
             return @"%me%,? (when|what)('s| is) the next (rocket )?launch\??";
+        }
+
+        public override string[] getCommandAliases()
+        {
+            return new string[] { "nl" };
         }
     }
 }
