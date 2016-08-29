@@ -45,5 +45,37 @@ namespace DiscordBot.Utilities
             }
         }
 
+        public static string getWindowString(JToken json)
+        {
+
+            DateTime winClose = DateTime.Parse(json["windowcloses"].ToString());
+            DateTime winOpen = DateTime.Parse(json["windowopens"].ToString());
+
+            string close = getHMSString(winClose);
+            string open = getHMSString(winOpen);
+
+            TimeSpan dif = winClose - winOpen;
+            string winDif = getHMSString(dif);
+
+            return String.Format("Window: {0}—{1} UTC ({2})\t\t", open, close, winDif);
+
+        }
+
+        public static string getHMSString(TimeSpan t)
+        {
+            String @string = String.Format("{0:00}:{1:00}:{2:00}", t.TotalHours, t.Minutes, t.Seconds);
+            if (@string.EndsWith(":00"))
+                @string = @string.Substring(0, @string.Length - 3);
+            return @string;
+        }
+
+        public static string getHMSString(DateTime dt)
+        {
+            String @string = String.Format("{0:00}:{1:00}:{2:00}", dt.Hour, dt.Minute, dt.Second);
+            if (@string.EndsWith(":00"))
+                @string = @string.Substring(0, @string.Length - 3);
+            return @string;
+        }
+
     }
 }

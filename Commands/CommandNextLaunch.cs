@@ -89,25 +89,10 @@ namespace DiscordBot.Commands
                 b.AppendFormattedLine((search ? "\t" : "") + final);
                 if (search)
                     b.Append("\t");
-                if (json["windowopens"] != json["windowcloses"])
+                if (json["windowcloses"] != null && json["windowopens"] != json["windowcloses"])
                 {
-                    DateTime winClose = DateTime.Parse(json["windowcloses"].ToString());
-                    DateTime winOpen = DateTime.Parse(json["windowopens"].ToString());
-
-                    string close = String.Format("{0:00}:{1:00}:{2:00}", winClose.Hour, winClose.Minute, winClose.Second);
-                    if (close.EndsWith(":00"))
-                        close = close.Substring(0, close.Length - 3);
-
-                    string open = String.Format("{0:00}:{1:00}:{2:00}", winOpen.Hour, winOpen.Minute, winOpen.Second);
-                    if (open.EndsWith(":00"))
-                        open = open.Substring(0, open.Length - 3);
-
-                    TimeSpan dif = winClose - winOpen;
-                    string winDif = String.Format("{0:00}:{1:00}:{2:00}", dif.TotalHours, dif.Minutes, dif.Seconds);
-                    if (winDif.EndsWith(":00"))
-                        winDif = winDif.Substring(0, winDif.Length - 3);
-
-                    b.AppendFormat("Window: {0}—{1} UTC ({2})\t\t", open, close, winDif);
+                    string windowData = LaunchUtils.getWindowString(json);
+                    b.AppendFormat("{0}\t\t", windowData);
                 }
                 b.AppendFormat("From {0}", location);
 
@@ -115,7 +100,7 @@ namespace DiscordBot.Commands
             }
             catch (Exception _e)
             {
-                e.Channel.SendMessage("Couldn't fetch data because an orror occurred. If it persists, please inform iPeer and show him this: `" + _e.ToString() + " // " + e.Message);
+                e.Channel.SendMessage("Couldn't fetch data because an error occurred. If it persists, please inform iPeer and show him this: `" + _e.ToString() + " // " + e.Message + "`");
             }
         }
 
