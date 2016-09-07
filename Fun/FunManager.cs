@@ -5,6 +5,7 @@ using DiscordBot.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,100 +14,81 @@ namespace DiscordBot.Fun
     public class FunManager
     {
 
-        // These are mostly satire, but there's some legit games in here too
-        // ^ let's be honest, they're mostly legit, with a few satire
-        private string[] _gameNames = new string[] {
-            "Kerbal Space Program",
-            "Launch Schedule Simulator 2016",
-            "Elite: Dangerous",
-            //"010100110111000001100001011000010110000101100001011000110110010100100001", <- not a game
-            //"0011010000110010", // <- not a game
-            "Universe Sandbox 2",
-            "Euro Truck Simulator 2",
-            "American Truck Simulator",
-            "Portal 2",
-            "The Waiting Game",
-            "The Price Is Right",
-            "No Man's Sky",
-            "Half-Life 3", // How can you not have a random game easter egg that doesn't have HL3 in it?
-            "with Fire",
-            "Doctor",
-            "Theme Hospital", // Hospital administrator is TOTALLY cheating
-            "Bowling with Roman",
-            "The Elder Scrolls V: Skyrim",
-            "Rocket League",
-            "Team Fortress 2",
-            "in the woods",
-            "in the rain",
-            "with Regul[ea]r Expre(s){2}ions",
-            "Pokémon Blue",
-            "Pokémon Red",
-            "Pokémon Yellow",
-            "Minecraft",
-            "Fallout Shelter",
-            "Deus Ex: Mankind Divided",
-            "Spot the Difference",
-            "I Spy with My Little Eye"
-        };
-
-        private bool isPlayingGame = false;
-        private int newGameMagicNumber = 1;
-        private DateTime startedPlaying = new DateTime(1970, 1, 1);
-        private double _gamePlayingGraceMinutes = 30; // How many minutes should we "play" a game for minimum, even if the random chance is hit again?
-
         public static FunManager Instance { get; private set; }
-        private Logger Logger { get; set; }
+        public Logger Logger { get; private set; }
+
+        private List<IFunModule> _modules = new List<IFunModule>();
 
         public FunManager()
         {
             Instance = this;
             this.Logger = new Logger("FunManager");
-#if DEBUG
-            newGameMagicNumber = 50;
-#endif
-            //this.Logger.Log("Let's go have fun, Niko!");
+            this.LoadModules();
         }
 
-        public string onMessageReceived(MessageEventArgs e, bool forced = false)
+        public void LoadModules()
         {
-
-            Random r = new Random();
-            int _newGame = r.RealNext(100);
-            //this.Logger.Log("{0}", _newGame);
-            if (_newGame <= newGameMagicNumber || forced) // N% chance hit, pick a new game (or not)
+            this.Logger.Log("Loading Fun Modules...");
+            if (this._modules.Count > 0)
+                this._modules.Clear();
+            string[] blacklistedModuleClasses = new string[] { "FunModuleBase" };
+            Type[] types = Assembly.GetExecutingAssembly().GetTypes();
+            Type[] _toInit = types.Where(a => (a.Name.StartsWith("FunModule") && !blacklistedModuleClasses.Contains(a.Name))).ToArray();
+            this.Logger.Log("{0} module(s) to initialise", _toInit.Length);
+            foreach (Type t in _toInit)
             {
-                //this.Logger.Log("Random chance on GameChance was hit -- {0}", DateTime.Compare(this.startedPlaying.AddMinutes(_gamePlayingGraceMinutes), DateTime.Now));
-                if (this.isPlayingGame && DateTime.Compare(this.startedPlaying.AddMinutes(_gamePlayingGraceMinutes), DateTime.Now) < 1 || forced)
-                {
-                    int whatDo = (new Random(Utils.getEpochTime())).RealNext(1, 10); // If this is >= 5, we do nothing
-                    if (whatDo == 1) { this.Logger.Log("Stopped playing"); Program.Instance.client.SetGame(null); this.isPlayingGame = false; } // 10%, stop "playing"
-                    else if (whatDo >= 2 && whatDo < 5) // 40%, pick a new game
-                    {
-                        return setRandomGame();
-                    }
-                    // else do nothing
-                }
-                else if (!this.isPlayingGame)
-                {
-                    this.isPlayingGame = true;
-                    return setRandomGame();
-                }
-
+                this.Logger.Log("Initialising module '{0}'", t.FullName);
+                IFunModule c = (IFunModule)Activator.CreateInstance(t);
+                this._modules.Add(c);
             }
-            return string.Empty;
         }
 
-        private string setRandomGame()
+        public void onMessageReceived(MessageEventArgs e)
         {
-            this.startedPlaying = DateTime.Now;
-            string game = _gameNames[new Random(Utils.getEpochTime()).Next(_gameNames.Length)];
-            this.Logger.Log("Now playing: {0}", game);
-            Program.Instance.client.SetGame(new Game(game));
-            return game;
+            foreach (IFunModule f in this._modules)
+                f.onMessageReceived(e);
         }
 
+        public void onMessageUpdated(MessageUpdatedEventArgs e)
+        {
+            foreach (IFunModule f in this._modules)
+                f.onMessageUpdated(e);
+        }
 
+        public void onDMReceived(MessageEventArgs e)
+        {
+            foreach (IFunModule f in this._modules)
+                f.onDMReceived(e);
+        }
 
+        public void onServerJoined(ServerEventArgs e)
+        {
+            foreach (IFunModule f in this._modules)
+                f.onServerJoined(e);
+        }
 
+        public void onServerLeft(ServerEventArgs e)
+        {
+            foreach (IFunModule f in this._modules)
+                f.onServerLeft(e);
+        }
+
+        public void onUserUpdate(UserUpdatedEventArgs e)
+        {
+            foreach (IFunModule f in this._modules)
+                f.onUserUpdate(e);
+        }
+
+        public void onUserLeft(UserEventArgs e)
+        {
+            foreach (IFunModule f in this._modules)
+                f.onUserLeft(e);
+        }
+
+        public void onUserJoined(UserEventArgs e)
+        {
+            foreach (IFunModule f in this._modules)
+                f.onUserJoined(e);
+        }
     }
 }

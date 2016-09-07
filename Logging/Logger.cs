@@ -27,6 +27,7 @@ namespace DiscordBot.Logging
 
         public string Name { get; private set; }
         public string LogPath { get; private set; }
+        private bool alwaysPrefix = false;
 
         public Logger(String name) : this(name, Path.Combine(Utils.getApplicationEXEFolderPath(), "logs", String.Format("{0}.log", name))) { }
 
@@ -44,6 +45,13 @@ namespace DiscordBot.Logging
             // At this point, everything is save to use, so we can start writing stuff to the log
             this.LogToEngineAndModule("Logger created with name '{0}' -- File path: {1}", name, path);
 
+        }
+
+        public Logger createSubLogger(string name)
+        {
+            Logger l = new Logger(name, this.LogPath);
+            l.alwaysPrefix = true;
+            return l;
         }
 
         public static void ArchiveAndRemoveOldLogs()
@@ -114,11 +122,14 @@ namespace DiscordBot.Logging
                 string time = DateTime.Now.ToString("yyyy-MM-ddTHH\\:mm\\:ss");
                 string uptime_time = Utils.FormatUptime(Program.Instance.getUptime());
 
-                string @string = String.Format("[{0} / {1}] {2} {3}", time, uptime_time, type, _msg);
+                string @string = string.Empty;
+                if (this.alwaysPrefix)
+                    @string = String.Format("[{0} / {1}] {2} [{4}] {3}", time, uptime_time, type, _msg, this.Name.ToUpper());
+                else 
+                    @string = String.Format("[{0} / {1}] {2} {3}", time, uptime_time, type, _msg);
 
 #if DEBUG
-                string dbg_string = String.Format("[{0} / {1}] {2} [{4}] {3}", time, uptime_time, type, _msg, this.Name.ToUpper());
-                Console.WriteLine(dbg_string);
+                Console.WriteLine(@string);
 #endif
 
                 // Write the juicy goodness to file

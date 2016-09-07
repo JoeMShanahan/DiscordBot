@@ -1,0 +1,24 @@
+﻿<#@ template language="C#" hostSpecific="True"#>
+<#@ output extension="cs" #>
+<#@ import namespace="System.IO" #>
+<#
+    int revisionNumber;
+    try
+    {
+        using(var f = File.OpenText(Host.ResolvePath("AssemblyFileVersion.cs")))
+        {
+            string s = f.ReadLine().Replace("//","");
+            revisionNumber = int.Parse(s) + 1; 
+        }
+    }catch
+    {     
+        revisionNumber = 0; 
+    }
+#>
+//<#=revisionNumber#>
+// 
+// This code is automatically generated at build time. Any edits made to this file should be instead applied to its template (AssemblyFileVersion.tt)
+// 
+
+using System.Reflection;
+[assembly: AssemblyFileVersion("1.0.4.<#= revisionNumber #>")]

@@ -121,6 +121,8 @@ namespace DiscordBot
         {
             bool isDM = e.Server == null;
 
+            this.funManager.onMessageUpdated(e);
+
             if (isDM)
             { // Private messages
 
@@ -141,6 +143,7 @@ namespace DiscordBot
 
         private void UserUpdated(object sender, UserUpdatedEventArgs e)
         {
+            this.funManager.onUserUpdate(e);
             if (!this._config.logUserUpdates) { return; }
             MessageLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
             string logMsg = String.Format("Update on user '{0}' [{1}] from server '{3}' [{4}]: {2}", e.Before.Name, e.Before.Id, String.Format("{0} -> {1}, {2} -> {3}, {4} -> {5}, {6} -> {7}", e.Before.Name, e.After.Name, e.Before.Nickname, e.After.Nickname, e.Before.CurrentGame.GetValueOrDefault().Name, e.After.CurrentGame.GetValueOrDefault().Name, e.Before.Status.ToString(), e.After.Status.ToString()), e.Server.Name, e.Server.Id);
@@ -149,6 +152,10 @@ namespace DiscordBot
 
         private void UserJoinedOrLeft(object sender, UserEventArgs e, bool isJoin)
         {
+            if (isJoin)
+                this.funManager.onUserJoined(e);
+            else
+                this.funManager.onUserLeft(e);
             MessageLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
             string logMsg = String.Format("{2} -> '{0}' [{1}]", e.User.Name, e.User.Id, isJoin?"JOIN":"LEAVE");
             sl.Log(logMsg);
@@ -156,6 +163,7 @@ namespace DiscordBot
 
         private void ServerUnavailable(object sender, ServerEventArgs e) // Fires if the bot is no longer authorised to be on the server (I think) - We also use it to handle when the bot leaves a server
         {
+            this.funManager.onServerLeft(e);
             MessageLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
             string logMsg = String.Format("Server unavailable: '{0}' [{1}]", e.Server.Name, e.Server.Id);
             sl.Log(logMsg);
@@ -165,6 +173,7 @@ namespace DiscordBot
 
         private void ServerAvailable(object sender, ServerEventArgs e)
         {
+            this.funManager.onServerJoined(e);
             MessageLogger sl = this.serverLogManager.createLoggerForServer(e.Server);
             string logMsg = String.Format("Server available: '{0}' [{1}]", e.Server.Name, e.Server.Id);
             sl.Log(logMsg);
@@ -173,6 +182,7 @@ namespace DiscordBot
 
         private void JoinedServer(object sender, ServerEventArgs e)
         {
+            this.funManager.onServerJoined(e);
             MessageLogger sl = this.serverLogManager.createLoggerForServer(e.Server);
             string logMsg = String.Format("Joined server '{0}' [{1}]", e.Server.Name, e.Server.Id);
             sl.Log(logMsg);
@@ -222,10 +232,6 @@ namespace DiscordBot
             {
                 string command = e.Message.Text.Substring(1).Split(' ')[0];
                 this.commandManager.invokeCommandsFromName(command, e, isDM);
-            }
-            else if (!isDM && e.Message.Text.Contains("unacceptable") && e.Server.Id == 213292578093793282)
-            {
-                e.Channel.SendMessage("https://www.youtube.com/watch?v=aaSRYecKaqc");
             }
 
         }
