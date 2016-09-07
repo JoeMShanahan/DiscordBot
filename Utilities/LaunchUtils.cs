@@ -36,7 +36,7 @@ namespace DiscordBot.Utilities
                 }
 
                 string time = String.Format("{0}:{1}:{2}", span.Hours.ToString("D2"), span.Minutes.ToString("D2"), span.Seconds.ToString("D2"));
-                if (span.Days > 0) time = String.Format("{0} days, {1}", span.Days, time);
+                if (span.Days > 0) time = String.Format("{0} {2}, {1}", span.Days, time, span.Days == 1 ? "day" : "days");
 
                 string dateFormat = @"dd MMM yyyy \@ HH:mm:ss \U\T\C";
 
