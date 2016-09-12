@@ -55,7 +55,7 @@ namespace DiscordBot.Commands
                     JToken _tmp = _json["launches"];
                     foreach (JToken j in _tmp)
                     {
-                        if (j["vehicle"].ToString().ToLower().Contains(searchText) || (j["vehicle"].ToString().ToLower().Contains("super strypi") && searchText.EqualsIgnoreCase("oops")) /* Everyone loves a good easter egg */)
+                        if (j["vehicle"].ToString().ToLower().ContainsIgnoreCase(searchText) || (j["vehicle"].ToString().ToLower().ContainsIgnoreCase("super strypi") && searchText.EqualsIgnoreCase("oops")) /* Everyone loves a good easter egg */)
                         {
                             json = j;
                             break;
