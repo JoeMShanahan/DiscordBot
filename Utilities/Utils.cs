@@ -1,4 +1,5 @@
 ﻿using Discord;
+using DiscordBot.Extensions;
 using DiscordBot.Logging;
 using System;
 using System.Collections.Generic;
@@ -125,6 +126,11 @@ namespace DiscordBot.Utilities
             return AppDomain.CurrentDomain.BaseDirectory;
         }
 
+        public static string FormatUpdate(long l)
+        {
+            return FormatUptime(TimeSpan.FromSeconds(l));
+        }
+
         public static string FormatUptime(TimeSpan t)
         {
             return string.Format("{0:00}:{1:00}:{2:00}:{3:00}", t.Days, t.Hours, t.Minutes, t.Seconds);
@@ -172,5 +178,11 @@ namespace DiscordBot.Utilities
             return string.Format("{0:n1} {1}", adjustedSize, SizeSuffixes[mag]);
         }
 
+        public  static string emojiWithRandomSkintone(string v)
+        {
+            Random r = new Random(getEpochTime());
+            int tone = r.RealNext(1, 5);
+            return string.Format(":{0}::skin-tone-{1}:", v, tone);
+        }
     }
 }

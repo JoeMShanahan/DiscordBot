@@ -17,5 +17,7 @@ namespace DiscordBot.Fun
         public virtual void onUserJoined(UserEventArgs e) { }
         public virtual void onUserLeft(UserEventArgs e) { }
         public virtual void onUserUpdate(UserUpdatedEventArgs e) { }
+        public virtual void onBotTerminating() { }
+
     }
 }

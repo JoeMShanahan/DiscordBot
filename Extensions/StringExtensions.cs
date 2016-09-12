@@ -14,5 +14,15 @@ namespace DiscordBot.Extensions
             return s.ToLower().Equals(compare.ToLower());
         }
 
+        public static bool EndsWithIgnoreCase(this string s, string compare)
+        {
+            return s.ToLower().EndsWith(compare.ToLower());
+        }
+
+        public static bool ContainsIgnoreCase(this string s, string compare)
+        {
+            return s.ToLower().Contains(compare.ToLower());
+        }
+
     }
 }

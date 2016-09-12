@@ -114,6 +114,7 @@ namespace DiscordBot
 
                 });
                 this.Logger.Log("No longer connected, terminating process.", Logging.LogLevel.WARNING);
+                this.funManager.onBotTerminating();
             }
         }
 

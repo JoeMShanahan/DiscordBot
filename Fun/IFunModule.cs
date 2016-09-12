@@ -18,6 +18,7 @@ namespace DiscordBot.Fun
         void onUserUpdate(UserUpdatedEventArgs e);
         void onUserLeft(UserEventArgs e);
         void onUserJoined(UserEventArgs e);
+        void onBotTerminating();
 
     }
 }

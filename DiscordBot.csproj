@@ -86,6 +86,7 @@
     <Compile Include="Commands\CommandAmIOwner.cs" />
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\CommandConfig.cs" />
+    <Compile Include="Commands\CommandHowLongPlaying.cs" />
     <Compile Include="Commands\CommandIgnore.cs" />
     <Compile Include="Commands\CommandIsSuchAThingEvenPossible.cs" />
     <Compile Include="Commands\CommandLastLaunch.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Commands\CommandLeave.cs" />
     <Compile Include="Commands\CommandLeaveServer.cs" />
     <Compile Include="Commands\CommandListCommands.cs" />
+    <Compile Include="Commands\CommandListGameTimes.cs" />
     <Compile Include="Commands\CommandListServers.cs" />
     <Compile Include="Commands\CommandManager.cs" />
     <Compile Include="Commands\CommandMyPermissions.cs" />
@@ -107,11 +109,13 @@
     <Compile Include="Commands\CommandTest.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\PhraseCommandBase.cs" />
+    <Compile Include="Commands\PhraseCommandHello.cs" />
     <Compile Include="Commands\PhraseCommandQuit.cs" />
     <Compile Include="Commands\PhraseCommandSimpleReplyBase.cs" />
     <Compile Include="Commands\PhraseCommandTest.cs" />
     <Compile Include="Commands\PhraseCommandThanks.cs" />
     <Compile Include="Config\BotConfig.cs" />
+    <Compile Include="Extensions\DiscordNETExtensions.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Extensions\StringBuilderExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

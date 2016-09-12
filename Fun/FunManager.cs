@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Fun
 {
+
+    public class NoSuchFunModuleException : Exception { }
+
     public class FunManager
     {
 
@@ -41,6 +44,14 @@ namespace DiscordBot.Fun
                 IFunModule c = (IFunModule)Activator.CreateInstance(t);
                 this._modules.Add(c);
             }
+        }
+
+        public IFunModule getFunModuleWithName(string name)
+        {
+            IFunModule fm = this._modules.First(m => m.ToString().EndsWithIgnoreCase(name));
+            if (fm == null)
+                throw new NoSuchFunModuleException();
+            return fm;
         }
 
         public void onMessageReceived(MessageEventArgs e)
@@ -89,6 +100,12 @@ namespace DiscordBot.Fun
         {
             foreach (IFunModule f in this._modules)
                 f.onUserJoined(e);
+        }
+
+        public void onBotTerminating()
+        {
+            foreach (IFunModule f in this._modules)
+                f.onBotTerminating();
         }
     }
 }

@@ -178,7 +178,8 @@ namespace DiscordBot.Commands
         public void invokeMatchingPhraseCommands(MessageEventArgs e)
         {
             if (Utils.isUserIgnored("PHRASE_COMMAND", e)) { return; }
-            List<ICommand> _toinvoke = _commands.FindAll(c => !c.triggerPattern().Equals(string.Empty) && Regex.IsMatch(e.Message.RawText, c.triggerPattern().Replace("%me%", String.Format("<@{0}>", Program.Instance.client.CurrentUser.Id)), RegexOptions.IgnoreCase));
+            string meString = String.Format(@"(<@{0}>|{1})", Program.Instance.client.CurrentUser.Id, Program.Instance.client.CurrentUser.Name);
+            List<ICommand> _toinvoke = _commands.FindAll(c => !c.triggerPattern().Equals(string.Empty) && Regex.IsMatch(e.Message.RawText, c.triggerPattern().Replace("%me%", meString), RegexOptions.IgnoreCase));
             this.phraseCommandsTriggered += _toinvoke.Count;
             manageCommandInvokes(_toinvoke.ToArray(), e, false, true);
         }
