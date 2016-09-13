@@ -34,13 +34,17 @@ namespace DiscordBot.Config
 
         public bool announcePermissionErrors { get; set; } = true; // Should we log permission errors to the debug channel?
 
-        public string commandTriggerCharacters { get; set; } = "!~#.$"; // What character does a command have to start with to be treated as a command?
+        public string commandTriggerCharacters { get; set; } = "!.+~#@"; // What character does a command have to start with to be treated as a command?
 
-        public string publicRepyCommandCharacters { get; set; } = "~#$"; // Which of the above command characters are treated as "public" commands (replies sent to channel, not DM)? Note that characters listed here, but not in COMMAND_CHARACTERS will have no effect.
+        public string publicRepyCommandCharacters { get; set; } = "+~@#"; // Which of the above command characters are treated as "public" commands (replies sent to channel, not DM)? Note that characters listed here, but not in COMMAND_CHARACTERS will have no effect.
 
         public bool debugAnnounceCooldownChanges { get; set; } = false; // Should the bot announce when a command goes on cooldown in the debug channel? Defaults to false because it's spammy. Useful for begugging commands that aren't working.
 
         public bool logUserUpdates { get; set; } = false; // Should we log user update events? Set to false because it can be very spammy on large servers
+
+        public bool fireOnUpdatedMessages { get; set; } = true; // Should the bot fire commands on messages that have been edited.
+
+        public int updatedMessageCommandGraceSeconds { get; set; } = 60; // If a message is edited within this many seconds of being originally posted AND fireOnUpdatedMessages is TRUE, we fire commands on that message.
 
         public void saveConfig()
         {

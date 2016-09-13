@@ -86,6 +86,7 @@
     <Compile Include="Commands\CommandAmIOwner.cs" />
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\CommandConfig.cs" />
+    <Compile Include="Commands\CommandDebugTimePlayed.cs" />
     <Compile Include="Commands\CommandHowLongPlaying.cs" />
     <Compile Include="Commands\CommandIgnore.cs" />
     <Compile Include="Commands\CommandIsSuchAThingEvenPossible.cs" />

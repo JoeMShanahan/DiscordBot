@@ -69,12 +69,28 @@ namespace DiscordBot.Fun
 
         public bool isPlayingGame = false;
 #if DEBUG
-        private int newGameMagicNumber = 150;
+        private int newGameMagicNumber = 75;
 #else
         private int newGameMagicNumber = 1;
 #endif
-        private int newGameRollCeiling = 200; // 1% seemed too common, so I implemented this to enable "lower" percentages
-        public DateTime startedPlaying = new DateTime(1970, 1, 1);
+        private int newGameRollCeiling = 100; // 1% seemed too common, so I implemented this to enable "lower" percentages
+        private DateTime _startedPlaying = new DateTime(1970, 1, 1);
+        public DateTime startedPlaying {
+            get
+            {
+#if DEBUG
+                DateTime debug = this._startedPlaying.AddSeconds(-(new Random().RealNext(3600, 8400)));
+                return debug;
+#else
+                return _startedPlaying;
+#endif
+            }
+            private set
+            {
+                if (value != this._startedPlaying)
+                    this._startedPlaying = value;
+            }
+        }
         private double _gamePlayingGraceMinutes = 30; // How many minutes should we "play" a game for minimum, even if the random chance is hit again?
         private Logger Logger;
         public string currentGame { get; private set; }
@@ -102,13 +118,14 @@ namespace DiscordBot.Fun
                     int whatDo = (new Random(Utils.getEpochTime())).RealNext(1, 10); // If this is >= 5, we do nothing
                     if (whatDo == 1) // 10%, stop "playing"
                     {
+                        this.saveCurrentGameTime();
                         this.Logger.Log("Stopped playing");
                         Program.Instance.client.SetGame(null);
                         this.isPlayingGame = false;
-                        this.saveCurrentGameTime();
                     }
                     else if (whatDo >= 2 && whatDo < 5) // 40%, pick a new game
                     {
+                        this.saveCurrentGameTime();
                         setRandomGame();
                     }
                     // else do nothing
@@ -122,11 +139,11 @@ namespace DiscordBot.Fun
             }
         }
 
-        public override void onBotTerminating()
+        /*public override void onBotTerminating()
         {
             this.saveCurrentGameTime();
-            this.saveGameTimes();
-        }
+            //this.saveGameTimes();
+        }*/
 
         private void setRandomGame()
         {
@@ -140,7 +157,7 @@ namespace DiscordBot.Fun
         public void saveCurrentGameTime()
         {
             if (!this.isPlayingGame) { return; }
-            int secondsPlayed = ((TimeSpan)(DateTime.Now - this.startedPlaying)).Seconds;
+            Int64 secondsPlayed = (Int64)((TimeSpan)(DateTime.Now - this.startedPlaying)).TotalSeconds;
             if (this._playTimes.ContainsKey(this.currentGame))
                 this._playTimes[this.currentGame] += secondsPlayed;
             else
@@ -163,7 +180,9 @@ namespace DiscordBot.Fun
 
         public void saveGameTimes()
         {
-            File.WriteAllText("config/FunModule_RandomGame_Times.cfg", JsonConvert.SerializeObject(this._playTimes, Formatting.Indented));
+            string json = JsonConvert.SerializeObject(this._playTimes, Formatting.Indented);
+            this.Logger.Log("Saving game play data: {0}", LogLevel.DEBUG, json);
+            File.WriteAllText("config/FunModule_RandomGame_Times.cfg", json);
         }
 
     }

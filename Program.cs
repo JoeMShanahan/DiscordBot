@@ -88,7 +88,7 @@ namespace DiscordBot
                 });
 
                 this.IS_RUNNING = true;
-                this.client.MessageReceived += MessageReceived;
+                this.client.MessageReceived += (s, e) => MessageReceived(s, e, false);
                 this.client.JoinedServer += JoinedServer;
                 this.client.ServerAvailable += ServerAvailable;
                 this.client.ServerUnavailable += ServerUnavailable;
@@ -132,6 +132,19 @@ namespace DiscordBot
             else
             {
                 this.serverLogManager.getLoggerForServerID(e.Server.Id).Log(e.Channel, "{0} [{1}] updated message '{2}' to '{3}' in channel '{4}' [{5}] on server '{6}' [{7}]", e.User.Name, e.User.Id, e.Before.Text, e.After.Text, e.Channel.Name, e.Channel.Id, e.Server.Name, e.Server.Id);
+            }
+
+#if DEBUG
+            this.Logger.Log("MessageUpdateCommandFiring: Enabled: {2}, Graced: {0} ({3} vs {4}), Text: {1}", (DateTime.Now - e.Before.Timestamp).TotalSeconds <= this._config.updatedMessageCommandGraceSeconds, e.After.Text, this._config.fireOnUpdatedMessages, DateTime.Now.ToString(), e.Before.Timestamp.ToString());
+#endif
+
+            if (this._config.fireOnUpdatedMessages)
+            {
+                if ((DateTime.UtcNow - e.Before.Timestamp).TotalSeconds <= this._config.updatedMessageCommandGraceSeconds)
+                {
+                    MessageEventArgs a = new MessageEventArgs(e.After);
+                    this.MessageReceived(null, a, true);
+                }
             }
         }
 
@@ -210,22 +223,24 @@ namespace DiscordBot
 
         }
 
-        private void MessageReceived(object sender, MessageEventArgs e)
+        private void MessageReceived(object sender, MessageEventArgs e, bool silent = true)
         {
             this.funManager.onMessageReceived(e);
             bool isDM = e.Server == null;
-
-            if (isDM)
-            { // Private messages
-
-                this.messageLogger.Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
-            }
-            else
+            if (!silent)
             {
-                this.serverLogManager.getLoggerForServerID(e.Server.Id).Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
+                if (isDM)
+                { // Private messages
+
+                    this.messageLogger.Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
+                }
+                else
+                {
+                    this.serverLogManager.getLoggerForServerID(e.Server.Id).Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
 #if DEBUG
-            this.Logger.Log("[{0}] {1} [{4}]@{3}: {2}", e.Server, e.User, e.Message.Text, e.Channel, e.User.Id);
+                    this.Logger.Log("[{0}] {1} [{4}]@{3}: {2}", e.Server, e.User, e.Message.Text, e.Channel, e.User.Id);
 #endif
+                }
             }
 
             this.commandManager.invokeMatchingPhraseCommands(e);
