@@ -27,8 +27,8 @@ namespace DiscordBot.Commands
 
             foreach (string s in games)
             {
-                if (rg._gameNames.Contains(s))
-                    rg._gameNames.Remove(s);
+                if (rg._gameNames.Contains(s.Replace("\\,", ",")))
+                    rg._gameNames.Remove(s.Replace("\\,", ","));
                 if (!rg._blacklistedGames.Contains(s.Replace("\\,", ",")))
                     rg._blacklistedGames.Add(s.Replace("\\,", ","));
                 rg.saveGameBlacklist();
