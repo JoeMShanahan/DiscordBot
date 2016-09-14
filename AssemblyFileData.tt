@@ -5,7 +5,7 @@
     int revisionNumber;
     try
     {
-        using(var f = File.OpenText(Host.ResolvePath("AssemblyFileVersion.cs")))
+        using(var f = File.OpenText(Host.ResolvePath("AssemblyFileData.cs")))
         {
             string s = f.ReadLine().Replace("//","");
             revisionNumber = int.Parse(s) + 1; 
@@ -14,6 +14,9 @@
     {     
         revisionNumber = 0; 
     }
+
+	string buildTimeString = String.Format(@"{0:dd/MM/yyyy \@ HH:mm:ss}", DateTime.UtcNow);
+
 #>
 //<#=revisionNumber#>
 // 
@@ -21,4 +24,6 @@
 // 
 
 using System.Reflection;
+using DiscordBot.Utilities;
 [assembly: AssemblyFileVersion("1.0.4.<#= revisionNumber #>")]
+[assembly: AssemblyBuildTime("<#= buildTimeString #> GMT")]

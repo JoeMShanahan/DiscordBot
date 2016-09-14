@@ -53,6 +53,12 @@ namespace DiscordBot.Utilities
 
         }
 
+        public static string getAssemblyBuildTime()
+        {
+            AssemblyBuildTime att = (AssemblyBuildTime)Assembly.GetExecutingAssembly().GetCustomAttribute(typeof(AssemblyBuildTime));
+            return att.BuildTime;
+        }
+
         public static Commands.CommandPermissionLevel getCommandPermissionlevelForUser(User u, Server s)
         {
             if (userIsOwner(u)) { return Commands.CommandPermissionLevel.BOT_OWNER; }

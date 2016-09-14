@@ -7,6 +7,7 @@ using Discord;
 using System.Diagnostics;
 using DiscordBot.Extensions;
 using DiscordBot.Utilities;
+using System.Reflection;
 
 namespace DiscordBot.Commands
 {
@@ -41,8 +42,10 @@ namespace DiscordBot.Commands
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormattedLine("Version: **{0}**", Utils.getBotVersion());
-            sb.AppendFormattedLine("Uptime (d:h:m:s): **{0}**, MEMORY - Private: **{1}**, Virtual: **{2}**, GC: **{3}**", Utils.FormatUptime(Program.Instance.getUptime()), Utils.FormatBytes(memory), Utils.FormatBytes(vMemory), Utils.FormatBytes(gcMemory));
+            string buildTime = Utils.getAssemblyBuildTime();
+            sb.AppendFormattedLine("VERSION: **{0}** built on **{1}**", Utils.getBotVersion(), buildTime);
+            sb.AppendFormattedLine("UPTIME (d:h:m:s): **{0}**", Utils.FormatUptime(Program.Instance.getUptime()));
+            sb.AppendFormattedLine("MEMORY (P/V/GC): **{0}**/**{1}**/**{2}**", Utils.FormatBytes(memory), Utils.FormatBytes(vMemory), Utils.FormatBytes(gcMemory));
             sb.AppendFormattedLine("Commands parsed: **{0}** | SERVERS - Count: **{1}**, Channels: **{2}** (**{3}** text, **{4}** voice), Users: **{5}**", commandsTriggered + phraseCommandsTriggered, servers, textChannels + voiceChannels, textChannels, voiceChannels, users);
 
             e.Channel.SendMessage(sb.ToString());
