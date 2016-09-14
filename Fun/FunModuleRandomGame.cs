@@ -95,6 +95,7 @@ namespace DiscordBot.Fun
         private Logger Logger;
         public string currentGame { get; private set; }
         public Dictionary<string, long> _playTimes = new Dictionary<string, long>();
+        public List<string> _blacklistedGames = new List<string> { "Steam", "Unity", "Minecraft", "Visual Studio", "SCS Workshop Uploader", "skyrim", "Skyrim" };
 
         public FunModuleRandomGame()
         {
@@ -103,6 +104,7 @@ namespace DiscordBot.Fun
             this.Logger.Log("Attempting to load total gameplay times from config...");
             this.loadGamesTimes();
             this.loadGameList();
+            this.loadGameBlacklist();
         }
 
         public override void onUserUpdate(UserUpdatedEventArgs e)
@@ -110,11 +112,7 @@ namespace DiscordBot.Fun
             if (!e.After.Name.Equals("LaunchBot") && e.After.CurrentGame.HasValue && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
             {
                 string gameName = e.After.CurrentGame.Value.Name;
-                if (!gameName.Equals("Visual Studio") && 
-                    !gameName.ContainsIgnoreCase("minecraft") /* We already have Minecraft and we don't need a new entry for every version */ &&
-                    !gameName.EqualsIgnoreCase("scs workshop uploader") &&
-                    !gameName.EqualsIgnoreCase("skyrim") /* Because Discord has like 4 entries for this, and we already have Skyrim hardcoded */ && 
-                    !this._gameNames.Contains(gameName))
+                if (!this._blacklistedGames.Contains(gameName) && !gameName.ContainsIgnoreCase("Minecraft") && !this._gameNames.Contains(gameName))
                 {
                     this._gameNames.Add(gameName);
                     this.saveGameList();
@@ -216,6 +214,19 @@ namespace DiscordBot.Fun
             string json = JsonConvert.SerializeObject(this._playTimes, Formatting.Indented);
             this.Logger.Log("Saving game play data: {0}", LogLevel.DEBUG, json);
             File.WriteAllText("config/FunModule_RandomGame_Times.cfg", json);
+        }
+
+        public void loadGameBlacklist()
+        {
+            if (!File.Exists("config/FunModule_RandomGame_Blacklist.cfg")) { return; }
+            this._blacklistedGames = new List<string>(JsonConvert.DeserializeObject<List<string>>(File.ReadAllText("config/FunModule_RandomGame_Blacklist.cfg")));
+            this.Logger.Log("Loaded {0} games from config", this._gameNames.Count);
+        }
+
+        public void saveGameBlacklist()
+        {
+            string json = JsonConvert.SerializeObject(this._blacklistedGames, Formatting.Indented);
+            File.WriteAllText("config/FunModule_RandomGame_Blacklist.cfg", json);
         }
 
     }

@@ -23,7 +23,7 @@ namespace DiscordBot.Commands
                     DateTime s = rg.startedPlaying;
                     string game = rg.currentGame;
                     string currentPlayTime = Utils.FormatUptime((DateTime.Now - s));
-                    e.Channel.SendMessageFormatted("{0}, I have been playing **{1}** for **{2}** (d:h:m:s) (**{3}** all time)", e.User.Mention, game, currentPlayTime, (rg._playTimes.ContainsKey(rg.currentGame) ? Utils.FormatUptime(TimeSpan.FromSeconds(rg._playTimes[rg.currentGame])) : currentPlayTime));
+                    e.Channel.SendMessageFormatted("{0}, I have been playing **{1}** for **{2}** (d:h:m:s) (**{3}** all time)", e.User.Mention, game, currentPlayTime, (rg._playTimes.ContainsKey(rg.currentGame) ? Utils.FormatUptime(TimeSpan.FromSeconds(rg._playTimes[rg.currentGame] + (DateTime.Now - s).TotalSeconds)) : currentPlayTime));
                 }
                 else
                 {

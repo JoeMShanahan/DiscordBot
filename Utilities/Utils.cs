@@ -178,11 +178,12 @@ namespace DiscordBot.Utilities
             return string.Format("{0:n1} {1}", adjustedSize, SizeSuffixes[mag]);
         }
 
-        public  static string emojiWithRandomSkintone(string v)
+        public static string emojiWithRandomSkintone(string v)
         {
             Random r = new Random(getEpochTime());
             int tone = r.RealNext(1, 5);
             return string.Format(":{0}::skin-tone-{1}:", v, tone);
         }
+
     }
 }

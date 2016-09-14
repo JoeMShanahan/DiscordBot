@@ -86,6 +86,7 @@
     </Compile>
     <Compile Include="Commands\CommandAmIOwner.cs" />
     <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Commands\CommandBlacklistGame.cs" />
     <Compile Include="Commands\CommandConfig.cs" />
     <Compile Include="Commands\CommandDebugTimePlayed.cs" />
     <Compile Include="Commands\CommandHowLongPlaying.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Commands\CommandLeave.cs" />
     <Compile Include="Commands\CommandLeaveServer.cs" />
     <Compile Include="Commands\CommandListCommands.cs" />
+    <Compile Include="Commands\CommandListGames.cs" />
     <Compile Include="Commands\CommandListGameTimes.cs" />
     <Compile Include="Commands\CommandListServers.cs" />
     <Compile Include="Commands\CommandManager.cs" />
