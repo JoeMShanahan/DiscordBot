@@ -242,7 +242,7 @@ namespace DiscordBot
 #endif
                 }
             }
-
+            if (e.User.Name.Equals(this.client.CurrentUser.Name)) { return; }
             this.commandManager.invokeMatchingPhraseCommands(e);
             if (this._config.commandTriggerCharacters.Contains(e.Message.Text.Substring(0, 1)))
             {
