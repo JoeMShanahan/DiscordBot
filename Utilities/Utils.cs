@@ -97,7 +97,7 @@ namespace DiscordBot.Utilities
             {
                 Server debug_server = getDebugServer();
                 Channel debug_channel = getDebugChannel();
-                Console.WriteLine("{0} {1}", debug_server, debug_channel);
+                //Console.WriteLine("{0} {1}", debug_server, debug_channel);
                 debug_channel.SendMessage(message.ToString());
             }
             catch (DebugServerNotFoundException) { Console.WriteLine("Cannot send message to debug channel because the debug server was not found"); }

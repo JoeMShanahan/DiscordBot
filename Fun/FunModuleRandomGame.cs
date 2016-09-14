@@ -17,10 +17,10 @@ namespace DiscordBot.Fun
 
         // These are mostly satire, but there's some legit games in here too
         // ^ let's be honest, they're mostly legit, with a few satire
-        public string[] _gameNames = new string[] {
+        public List<string> _gameNames = new List<string> {
             "Kerbal Space Program",
             "Launch Schedule Simulator 2016",
-            "Elite Dangerous",
+            "Elite: Dangerous", // Steam says without colon, Discord says with.
             //"010100110111000001100001011000010110000101100001011000110110010100100001", <- not a game
             //"0011010000110010", // <- not a game
             "Universe Sandbox 2",
@@ -102,6 +102,39 @@ namespace DiscordBot.Fun
             this.Logger.Log("Chance of playing or changing game is {0:P2} ({1}/{2})", (decimal)newGameMagicNumber / (decimal)newGameRollCeiling, newGameMagicNumber, newGameRollCeiling);
             this.Logger.Log("Attempting to load total gameplay times from config...");
             this.loadGamesTimes();
+            this.loadGameList();
+        }
+
+        public override void onUserUpdate(UserUpdatedEventArgs e)
+        {
+            if (!e.After.Name.Equals("LaunchBot") && e.After.CurrentGame.HasValue && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
+            {
+                string gameName = e.After.CurrentGame.Value.Name;
+                if (!gameName.Equals("Visual Studio") && 
+                    !gameName.ContainsIgnoreCase("minecraft") /* We already have Minecraft and we don't need a new entry for every version */ &&
+                    !gameName.EqualsIgnoreCase("scs workshop uploader") &&
+                    !gameName.EqualsIgnoreCase("skyrim") /* Because Discord has like 4 entries for this, and we already have Skyrim hardcoded */ && 
+                    !this._gameNames.Contains(gameName))
+                {
+                    this._gameNames.Add(gameName);
+                    this.saveGameList();
+                    this.Logger.Log("Learnt a new game: {0}", gameName);
+                    Utils.sendToDebugChannel("[**RandomGame**] Learnt a new game from '{1}': {0}", gameName, e.After.Name);
+                }
+            }
+        }
+
+        public void loadGameList()
+        {
+            if (!File.Exists("config/FunModule_RandomGame_Games.cfg")) { return; }
+            this._gameNames = new List<string>(JsonConvert.DeserializeObject<List<string>>(File.ReadAllText("config/FunModule_RandomGame_Games.cfg")));
+            this.Logger.Log("Loaded {0} games from config", this._gameNames.Count);
+        }
+
+        public void saveGameList()
+        {
+            string json = JsonConvert.SerializeObject(this._gameNames, Formatting.Indented);
+            File.WriteAllText("config/FunModule_RandomGame_Games.cfg", json);
         }
 
         public override void onMessageReceived(MessageEventArgs e)
@@ -148,7 +181,7 @@ namespace DiscordBot.Fun
         private void setRandomGame()
         {
             this.startedPlaying = DateTime.Now;
-            string game = _gameNames[new Random(Utils.getEpochTime()).Next(_gameNames.Length)];
+            string game = _gameNames[new Random(Utils.getEpochTime()).Next(_gameNames.Count)];
             this.currentGame = game;
             this.Logger.Log("Now playing: {0}", game);
             Program.Instance.client.SetGame(new Game(game));

@@ -102,7 +102,7 @@ namespace DiscordBot
 
                 this.client.ExecuteAndWait(async () =>
                 {
-                    await this.client.Connect(_config.botAPIToken); // TODO: Move to config
+                    await this.client.Connect(_config.botAPIToken, TokenType.Bot); // Updated to Discord.NET 0.9.5
 
 #if RELEASE
                 await Task.Delay(150000).ConfigureAwait(false);
