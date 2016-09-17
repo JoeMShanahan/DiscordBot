@@ -53,10 +53,13 @@ namespace DiscordBot.Fun
             bool top5 = e.Message.Text.Split(' ')[0].Substring(1).StartsWithIgnoreCase("top5");
             FunModuleRandomGame rg = FunManager.Instance.getFunModuleWithName<FunModuleRandomGame>("RandomGame");
             Dictionary<string, long> games = new Dictionary<string, long>(rg._playTimes);
-            if (games.ContainsKey(rg.currentGame))
-                games[rg.currentGame] += (long)(DateTime.Now - rg.startedPlaying).TotalSeconds;
-            else
-                games.Add(rg.currentGame, (long)(DateTime.Now - rg.startedPlaying).TotalSeconds);
+            if (rg.isPlayingGame)
+            {
+                if (games.ContainsKey(rg.currentGame))
+                    games[rg.currentGame] += (long)(DateTime.Now - rg.startedPlaying).TotalSeconds;
+                else
+                    games.Add(rg.currentGame, (long)(DateTime.Now - rg.startedPlaying).TotalSeconds);
+            }
             IOrderedEnumerable<KeyValuePair<string, long>> sorted = games.OrderByDescending(k => k.Value);
             int x = 0;
             StringBuilder sb = new StringBuilder(String.Format("Top {0} games, ordered by playtime:\n", top5 ? 5 : 10));
