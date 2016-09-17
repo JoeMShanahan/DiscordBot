@@ -24,7 +24,7 @@ namespace DiscordBot.Commands
             {
                 if (x++ >= (top5 ? 5 : 10)) { break; }
                 long time = kvp.Value;
-                if (rg.currentGame.EqualsIgnoreCase(kvp.Key))
+                if (rg.isPlayingGame && rg.currentGame.EqualsIgnoreCase(kvp.Key))
                     time += (long)(DateTime.Now - rg.startedPlaying).TotalSeconds;
                 sb.AppendFormattedLine("**{0}**. {1}: {2}", x, kvp.Key, Utils.FormatUptime(TimeSpan.FromSeconds(time)));
             }
