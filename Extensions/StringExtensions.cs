@@ -54,5 +54,20 @@ namespace DiscordBot.Extensions
             return regex.Split(str);
         }
 
+        public static bool StartsWithIgnoreCase(this string str, string what)
+        {
+            return str.ToLower().StartsWith(what.ToLower());
+        }
+
+        public static string Replace(this string str, List<string> needles, List<string> replacements) => Replace(str, needles.ToArray(), replacements.ToArray());
+        public static string Replace(this string str, string[] needles, string[] replacements)
+        {
+            if (needles.Length != replacements.Length)
+                throw new InvalidOperationException("Number of needles does not match the number of replacers");
+            string ret = str;
+            for (int x = 0; x < needles.Length; x++)
+                ret = ret.Replace(needles[x], replacements[x]);
+            return ret;
+        }
     }
 }

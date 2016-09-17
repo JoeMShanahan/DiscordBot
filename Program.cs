@@ -113,38 +113,45 @@ namespace DiscordBot
 
 
                 });
-                this.Logger.Log("No longer connected, terminating process.", Logging.LogLevel.WARNING);
+                this.Logger.Log("No longer connected, terminating process.", LogLevel.WARNING);
                 this.funManager.onBotTerminating();
             }
         }
 
         private void MessageUpdated(object sender, MessageUpdatedEventArgs e)
         {
-            bool isDM = e.Server == null;
-
-            this.funManager.onMessageUpdated(e);
-
-            if (isDM)
-            { // Private messages
-
-                this.messageLogger.Log(e.Channel, "{0} [{1}] updated message '{2}' to '{3}'", e.User.Name, e.User.Id, e.Before.Text, e.After.Text);
-            }
-            else
+            try
             {
-                this.serverLogManager.getLoggerForServerID(e.Server.Id).Log(e.Channel, "{0} [{1}] updated message '{2}' to '{3}' in channel '{4}' [{5}] on server '{6}' [{7}]", e.User.Name, e.User.Id, e.Before.Text, e.After.Text, e.Channel.Name, e.Channel.Id, e.Server.Name, e.Server.Id);
-            }
+                bool isDM = /*e.Server == null*/e.Channel.IsPrivate;
+
+                this.funManager.onMessageUpdated(e);
+
+                if (isDM)
+                { // Private messages
+
+                    this.messageLogger.Log(e.Channel, "{0} [{1}] updated message '{2}' to '{3}'", e.User.Name, e.User.Id, e.Before.Text, e.After.Text);
+                }
+                else
+                {
+                    this.serverLogManager.getLoggerForServerID(e.Server.Id).Log(e.Channel, "{0} [{1}] updated message '{2}' to '{3}' in channel '{4}' [{5}] on server '{6}' [{7}]", e.User.Name, e.User.Id, e.Before.Text, e.After.Text, e.Channel.Name, e.Channel.Id, e.Server.Name, e.Server.Id);
+                }
 
 #if DEBUG
-            this.Logger.Log("MessageUpdateCommandFiring: Enabled: {2}, Graced: {0} ({3} vs {4}), Text: {1}", (DateTime.Now - e.Before.Timestamp).TotalSeconds <= this._config.updatedMessageCommandGraceSeconds, e.After.Text, this._config.fireOnUpdatedMessages, DateTime.Now.ToString(), e.Before.Timestamp.ToString());
+                this.Logger.Log("MessageUpdateCommandFiring: Enabled: {2}, Graced: {0} ({3} vs {4}), Text: {1}", (DateTime.Now - e.Before.Timestamp).TotalSeconds <= this._config.updatedMessageCommandGraceSeconds, e.After.Text, this._config.fireOnUpdatedMessages, DateTime.Now.ToString(), e.Before.Timestamp.ToString());
 #endif
 
-            if (this._config.fireOnUpdatedMessages)
-            {
-                if ((DateTime.UtcNow - e.Before.Timestamp).TotalSeconds <= this._config.updatedMessageCommandGraceSeconds)
+                if (this._config.fireOnUpdatedMessages)
                 {
-                    MessageEventArgs a = new MessageEventArgs(e.After);
-                    this.MessageReceived(null, a, true);
+                    if ((DateTime.UtcNow - e.Before.Timestamp).TotalSeconds <= this._config.updatedMessageCommandGraceSeconds)
+                    {
+                        MessageEventArgs a = new MessageEventArgs(e.After);
+                        this.MessageReceived(null, a, true);
+                    }
                 }
+            }
+            catch (Exception _e)
+            {
+                Utils.LogException("MessageUpdated", _e);
             }
         }
 
@@ -157,11 +164,18 @@ namespace DiscordBot
 
         private void UserUpdated(object sender, UserUpdatedEventArgs e)
         {
-            this.funManager.onUserUpdate(e);
-            if (!this._config.logUserUpdates) { return; }
-            MessageLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
-            string logMsg = String.Format("Update on user '{0}' [{1}] from server '{3}' [{4}]: {2}", e.Before.Name, e.Before.Id, String.Format("{0} -> {1}, {2} -> {3}, {4} -> {5}, {6} -> {7}", e.Before.Name, e.After.Name, e.Before.Nickname, e.After.Nickname, e.Before.CurrentGame.GetValueOrDefault().Name, e.After.CurrentGame.GetValueOrDefault().Name, e.Before.Status.ToString(), e.After.Status.ToString()), e.Server.Name, e.Server.Id);
-            sl.Log(logMsg);
+            try
+            {
+                this.funManager.onUserUpdate(e);
+                if (!this._config.logUserUpdates) { return; }
+                MessageLogger sl = this.serverLogManager.getLoggerForServer(e.Server);
+                string logMsg = String.Format("Update on user '{0}' [{1}] from server '{3}' [{4}]: {2}", e.Before.Name, e.Before.Id, String.Format("{0} -> {1}, {2} -> {3}, {4} -> {5}, {6} -> {7}", e.Before.Name, e.After.Name, e.Before.Nickname, e.After.Nickname, e.Before.CurrentGame.GetValueOrDefault().Name, e.After.CurrentGame.GetValueOrDefault().Name, e.Before.Status.ToString(), e.After.Status.ToString()), e.Server.Name, e.Server.Id);
+                sl.Log(logMsg);
+            }
+            catch (Exception _e)
+            {
+                Utils.LogException("UserUpdated", _e);
+            }
         }
 
         private void UserJoinedOrLeft(object sender, UserEventArgs e, bool isJoin)
@@ -225,29 +239,36 @@ namespace DiscordBot
 
         private void MessageReceived(object sender, MessageEventArgs e, bool silent = true)
         {
-            this.funManager.onMessageReceived(e);
-            bool isDM = e.Server == null;
-            if (!silent)
+            try
             {
-                if (isDM)
-                { // Private messages
-
-                    this.messageLogger.Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
-                }
-                else
+                this.funManager.onMessageReceived(e);
+                bool isDM = /*e.Server == null*/e.Channel.IsPrivate;
+                if (!silent)
                 {
-                    this.serverLogManager.getLoggerForServerID(e.Server.Id).Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
+                    if (isDM)
+                    { // Private messages
+
+                        this.messageLogger.Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
+                    }
+                    else
+                    {
+                        this.serverLogManager.getLoggerForServerID(e.Server.Id).Log(e.Channel, "{0} [{1}]: {2}", e.User.Name, e.User.Id, e.Message.Text);
 #if DEBUG
-                    this.Logger.Log("[{0}] {1} [{4}]@{3}: {2}", e.Server, e.User, e.Message.Text, e.Channel, e.User.Id);
+                        this.Logger.Log("[{0}] {1} [{4}]@{3}: {2}", e.Server, e.User, e.Message.Text, e.Channel, e.User.Id);
 #endif
+                    }
+                }
+                if (e.User.Name.Equals(this.client.CurrentUser.Name)) { return; }
+                this.commandManager.invokeMatchingPhraseCommands(e);
+                if (this._config.commandTriggerCharacters.Contains(e.Message.Text.Substring(0, 1)))
+                {
+                    string command = e.Message.Text.Substring(1).Split(' ')[0];
+                    this.commandManager.invokeCommandsFromName(command, e, isDM);
                 }
             }
-            if (e.User.Name.Equals(this.client.CurrentUser.Name)) { return; }
-            this.commandManager.invokeMatchingPhraseCommands(e);
-            if (this._config.commandTriggerCharacters.Contains(e.Message.Text.Substring(0, 1)))
+            catch (Exception _e)
             {
-                string command = e.Message.Text.Substring(1).Split(' ')[0];
-                this.commandManager.invokeCommandsFromName(command, e, isDM);
+                Utils.LogException("MessageReceived", _e);
             }
 
         }

@@ -46,6 +46,12 @@ namespace DiscordBot.Fun
             }
         }
 
+        public T getFunModuleWithName<T>(string name)
+        {
+            IFunModule m = getFunModuleWithName(name);
+            return (T)m;
+        }
+
         public IFunModule getFunModuleWithName(string name)
         {
             IFunModule fm = this._modules.First(m => m.ToString().EndsWithIgnoreCase(name));

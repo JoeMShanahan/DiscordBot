@@ -15,6 +15,7 @@ namespace DiscordBot.Utilities
 
     public class DebugServerNotFoundException : Exception { }
     public class DebugChannelNotFoundException : Exception { }
+    public class DebugChannelNotEnabledException : Exception { }
 
     public static class Utils
     {
@@ -98,7 +99,7 @@ namespace DiscordBot.Utilities
         {
 
             string message = String.Format(format, replacers);
-
+            if (!Program.Instance._config.useDebugChannel) { throw new DebugChannelNotEnabledException(); }
             try
             {
                 Server debug_server = getDebugServer();
@@ -148,13 +149,25 @@ namespace DiscordBot.Utilities
             return (int)t.TotalSeconds;
         }
 
+        internal static void LogException(string clazz, Exception exception)
+        {
+            string exceptionText = String.Format("[**EXCEPTION**] Exception occured in {1}:\n```{0}```", exception.ToString(), clazz);
+            try
+            {
+                Utils.sendToDebugChannel(exceptionText);
+            }
+            catch { }
+            Program.Instance.Logger.Log("{0}", exceptionText.Replace(new string[] { "[**EXCEPTION**]", "```" }, new string[] { "[EXCEPTION]", "" }), LogLevel.ERROR);
+
+        }
+
         public static bool isUserIgnored(string command, MessageEventArgs e)
         {
             if (Program.Instance._config.ignoredUsers.Contains(e.User.Id))
             {
                 string logMsg = String.Format("Ignoring command '{0}' from user '{1}' [{2}] as they are on the ignore list", command, e.User.Name, e.User.Id);
 
-                if (e.Server == null)
+                if (/*e.Server == null*/e.Channel.IsPrivate)
                     Program.Instance.messageLogger.Log(e.Channel, logMsg, LogLevel.WARNING);
                 else
                     Program.Instance.serverLogManager.getLoggerForServer(e.Server).Log(e.Channel, logMsg, LogLevel.WARNING);

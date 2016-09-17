@@ -135,6 +135,14 @@ namespace DiscordBot.Fun
             File.WriteAllText("config/FunModule_RandomGame_Games.cfg", json);
         }
 
+        public override void onServerJoined(ServerEventArgs e) // Restore game status after unplanned disconnects
+        {
+            if (this.isPlayingGame && !this.currentGame.Equals(Program.Instance.client.CurrentGame.Name))
+            {
+                Program.Instance.client.SetGame(this.currentGame);
+            }
+        }
+
         public override void onMessageReceived(MessageEventArgs e)
         {
 

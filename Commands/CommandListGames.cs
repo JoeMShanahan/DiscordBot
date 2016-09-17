@@ -23,6 +23,13 @@ namespace DiscordBot.Commands
             StringBuilder sb = new StringBuilder("```");
             foreach (string s in rg._gameNames)
             {
+                if (sb.ToString().Length + (s.Length + 3) > 2000) // Fix for games list exceeding 2,000 characters
+                {
+                    sb.Append("```");
+                    e.Channel.SendMessageFormatted("{0}", sb.ToString());
+                    sb.Clear();
+                    sb.Append("```");
+                }
                 sb.AppendLine($"{s}");
             }
             e.Channel.SendMessageFormatted("{0}```", sb.ToString());

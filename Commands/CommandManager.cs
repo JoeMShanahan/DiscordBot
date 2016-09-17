@@ -63,7 +63,7 @@ namespace DiscordBot.Commands
 
             // This is a mess now
 
-            if (e.Server == null)
+            if (/*e.Server == null*/e.Channel.IsPrivate)
             {
                 if (!_userCooldowns.ContainsKey(e.User)) { return false; } // No sever entry, no command are on cooldown for that server
                 else if (!_userCooldowns[e.User].ContainsKey(c)) { return false; } // Command is not in the cooldown list
