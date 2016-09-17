@@ -1,4 +1,5 @@
 ﻿using Discord;
+using DiscordBot.Commands;
 using DiscordBot.Extensions;
 using DiscordBot.Logging;
 using DiscordBot.Utilities;
@@ -12,6 +13,200 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Fun
 {
+
+    public class CommandBlacklistGame : CommandBase, ICommand
+    {
+
+        public override CommandPermissionLevel getRequiredPermissionLevel()
+        {
+            return CommandPermissionLevel.BOT_ADMIN;
+        }
+
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
+        {
+            string gameList = e.Message.Text.FromNthDeliminator(1, ' ');
+            string[] games = gameList.SplitWithEscapes(',');
+
+            FunModuleRandomGame rg = FunManager.Instance.getFunModuleWithName<FunModuleRandomGame>("RandomGame");
+
+            foreach (string s in games)
+            {
+                if (rg.isPlayingGame && rg.currentGame.Equals(s))
+                    rg.setRandomGame();
+                if (rg._gameNames.Contains(s.Replace("\\,", ",")))
+                    rg._gameNames.Remove(s.Replace("\\,", ","));
+                if (!rg._blacklistedGames.Contains(s.Replace("\\,", ",")))
+                    rg._blacklistedGames.Add(s.Replace("\\,", ","));
+                if (rg._playTimes.ContainsKey(s.Replace("\\,", ",")))
+                    rg._playTimes.Remove(s.Replace("\\,", ","));
+                rg.saveGameBlacklist();
+                rg.saveGameList();
+
+            }
+        }
+    }
+
+    public class CommandTop5Games : CommandBase, ICommand
+    {
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
+        {
+            bool top5 = e.Message.Text.Split(' ')[0].Substring(1).StartsWithIgnoreCase("top5");
+            FunModuleRandomGame rg = FunManager.Instance.getFunModuleWithName<FunModuleRandomGame>("RandomGame");
+            Dictionary<string, long> games = new Dictionary<string, long>(rg._playTimes);
+            if (games.ContainsKey(rg.currentGame))
+                games[rg.currentGame] += (long)(DateTime.Now - rg.startedPlaying).TotalSeconds;
+            else
+                games.Add(rg.currentGame, (long)(DateTime.Now - rg.startedPlaying).TotalSeconds);
+            IOrderedEnumerable<KeyValuePair<string, long>> sorted = games.OrderByDescending(k => k.Value);
+            int x = 0;
+            StringBuilder sb = new StringBuilder(String.Format("Top {0} games, ordered by playtime:\n", top5 ? 5 : 10));
+            foreach (KeyValuePair<string, long> kvp in sorted)
+            {
+                if (x++ >= (top5 ? 5 : 10)) { break; }
+                long time = kvp.Value;
+                if (rg.isPlayingGame && rg.currentGame.EqualsIgnoreCase(kvp.Key))
+                    time += (long)(DateTime.Now - rg.startedPlaying).TotalSeconds;
+                sb.AppendFormattedLine("**{0}**. {1}: {2}", x, kvp.Key, Utils.FormatUptime(TimeSpan.FromSeconds(time)));
+            }
+            e.Channel.SendMessage(sb.ToString());
+        }
+
+        public override string[] getCommandAliases()
+        {
+            return new string[] { "top5", "top10", "top10games" };
+        }
+
+    }
+
+    public class CommandHowLongPlaying : CommandBase, ICommand
+    {
+
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
+        {
+            try
+            {
+                FunModuleRandomGame rg = FunManager.Instance.getFunModuleWithName<FunModuleRandomGame>("RandomGame");
+                if (rg.isPlayingGame)
+                {
+                    DateTime s = rg.startedPlaying;
+                    string game = rg.currentGame;
+                    string currentPlayTime = Utils.FormatUptime((DateTime.Now - s));
+                    e.Channel.SendMessageFormatted("{0}, I have been playing **{1}** for **{2}** (d:h:m:s) (**{3}** all time)", e.User.Mention, game, currentPlayTime, (rg._playTimes.ContainsKey(rg.currentGame) ? Utils.FormatUptime(TimeSpan.FromSeconds(rg._playTimes[rg.currentGame] + (DateTime.Now - s).TotalSeconds)) : currentPlayTime));
+                }
+                else
+                {
+                    e.Channel.SendMessageFormatted("{0}, I'm not currently playing a game!", e.User.Mention);
+                }
+
+            }
+            catch
+            {
+                e.Channel.SendMessage("Couldn't query current game data because the module was not found.");
+            }
+        }
+
+        public override string[] getCommandAliases()
+        {
+            return new string[] { "hlp", "howlong", "beenplaying", "gametime" };
+        }
+
+        public override string triggerPattern()
+        {
+            if ((FunManager.Instance.getFunModuleWithName<FunModuleRandomGame>("RandomGame")).isPlayingGame)
+            {
+                return String.Format(@"%me%,? how long have you been playing (that( game)?|{0})\??", System.Text.RegularExpressions.Regex.Escape(((FunModuleRandomGame)FunManager.Instance.getFunModuleWithName("RandomGame")).currentGame));
+            }
+            else
+            {
+                return @"%me%,? how long have you been playing that( game)?\??";
+            }
+        }
+    }
+
+    public class CommandListGameTimes : CommandBase, ICommand
+    {
+
+        public override CommandPermissionLevel getRequiredPermissionLevel()
+        {
+            return CommandPermissionLevel.BOT_ADMIN;
+        }
+
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
+        {
+            FunModuleRandomGame rg = FunManager.Instance.getFunModuleWithName<FunModuleRandomGame>("RandomGame");
+            if (rg._playTimes.Count() == 0)
+            {
+                e.Channel.SendMessage("No gameplay time data!");
+            }
+            else
+            {
+                StringBuilder b = new StringBuilder("```");
+                foreach (string k in rg._playTimes.Keys)
+                {
+                    b.AppendFormat("{0}: {1}\n", k, Utils.FormatUpdate(rg._playTimes[k]));
+                }
+                b.Append("```");
+                e.Channel.SendMessage(b.ToString());
+            }
+        }
+    }
+
+    public class CommandListGames : CommandBase, ICommand
+    {
+
+        public override CommandPermissionLevel getRequiredPermissionLevel()
+        {
+            return CommandPermissionLevel.BOT_ADMIN;
+        }
+
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
+        {
+            FunModuleRandomGame rg = FunManager.Instance.getFunModuleWithName<FunModuleRandomGame>("RandomGame");
+            StringBuilder sb = new StringBuilder("```");
+            foreach (string s in rg._gameNames)
+            {
+                if (sb.ToString().Length + (s.Length + 3) > 2000) // Fix for games list exceeding 2,000 characters
+                {
+                    sb.Append("```");
+                    e.Channel.SendMessageFormatted("{0}", sb.ToString());
+                    sb.Clear();
+                    sb.Append("```");
+                }
+                sb.AppendLine($"{s}");
+            }
+            e.Channel.SendMessageFormatted("{0}```", sb.ToString());
+        }
+    }
+
+    public class CommandIgnoreGamesFrom : CommandBase, ICommand
+    {
+        public override CommandPermissionLevel getRequiredPermissionLevel()
+        {
+            return CommandPermissionLevel.BOT_ADMIN;
+        }
+
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
+        {
+            FunModuleRandomGame rg = FunManager.Instance.getFunModuleWithName<FunModuleRandomGame>("RandomGame");
+            ulong userid = 0;
+            try
+            {
+                userid = Convert.ToUInt64(e.Message.Text.FromNthDeliminator(1, ' '));
+                if (!rg.ignoredUserIDs.Contains(userid))
+                {
+                    rg.ignoredUserIDs.Add(userid);
+                    e.Channel.SendMessageFormatted("Added user ID {0} to game learn blacklist.", userid);
+                    rg.saveIgnoredUsers();
+                }
+                else
+                {
+                    e.Channel.SendMessageFormatted("{0} is already ignored!", userid);
+                }
+            }
+            catch (Exception _e) { e.Channel.SendMessageFormatted("Unable to ignore user: {0}", _e.Message ?? "No Message"); }
+        }
+    }
+
     public class FunModuleRandomGame : FunModuleBase, IFunModule
     {
 
@@ -96,6 +291,7 @@ namespace DiscordBot.Fun
         public string currentGame { get; private set; }
         public Dictionary<string, long> _playTimes = new Dictionary<string, long>();
         public List<string> _blacklistedGames = new List<string> { "Steam", "Unity", "Minecraft", "Visual Studio", "SCS Workshop Uploader", "skyrim", "Skyrim" };
+        public List<ulong> ignoredUserIDs = new List<ulong>();
 
         public FunModuleRandomGame()
         {
@@ -105,11 +301,12 @@ namespace DiscordBot.Fun
             this.loadGamesTimes();
             this.loadGameList();
             this.loadGameBlacklist();
+            this.loadIgnoredUsers();
         }
 
         public override void onUserUpdate(UserUpdatedEventArgs e)
         {
-            if (!e.After.Name.Equals("LaunchBot") && e.After.CurrentGame.HasValue && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
+            if (e.After.CurrentGame.HasValue && !Utils.isUserIgnored(e.After.Id) && !this.ignoredUserIDs.Contains(e.After.Id) && !e.After.Name.Equals("LaunchBot") && !e.After.CurrentGame.Value.Name.Equals(string.Empty) && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
             {
                 string gameName = e.After.CurrentGame.Value.Name;
                 if (!this._blacklistedGames.Contains(gameName) && !gameName.ContainsIgnoreCase("Minecraft") && !this._gameNames.Contains(gameName))
@@ -117,7 +314,7 @@ namespace DiscordBot.Fun
                     this._gameNames.Add(gameName);
                     this.saveGameList();
                     this.Logger.Log("Learnt a new game: {0}", gameName);
-                    Utils.sendToDebugChannel("[**RandomGame**] Learnt a new game from '{1}': {0}", gameName, e.After.Name);
+                    Utils.sendToDebugChannel("[**RandomGame**] Learnt a new game from '{1}' [{2}]: {0}", gameName, e.After.Name, e.After.Id);
                 }
             }
         }
@@ -184,7 +381,7 @@ namespace DiscordBot.Fun
             //this.saveGameTimes();
         }*/
 
-        private void setRandomGame()
+        public void setRandomGame()
         {
             this.startedPlaying = DateTime.Now;
             string game = _gameNames[new Random(Utils.getEpochTime()).Next(_gameNames.Count)];
@@ -235,6 +432,19 @@ namespace DiscordBot.Fun
         {
             string json = JsonConvert.SerializeObject(this._blacklistedGames, Formatting.Indented);
             File.WriteAllText("config/FunModule_RandomGame_Blacklist.cfg", json);
+        }
+
+        public void loadIgnoredUsers()
+        {
+            if (!File.Exists("config/FunModule_RandomGame_Ignores.cfg")) { return; }
+            this.ignoredUserIDs = new List<ulong>(JsonConvert.DeserializeObject<List<ulong>>(File.ReadAllText("config/FunModule_RandomGame_Ignores.cfg")));
+            this.Logger.Log("Loaded {0} ignores from config", this.ignoredUserIDs.Count);
+        }
+
+        public void saveIgnoredUsers()
+        {
+            string json = JsonConvert.SerializeObject(this.ignoredUserIDs, Formatting.Indented);
+            File.WriteAllText("config/FunModule_RandomGame_Ignores.cfg", json);
         }
 
     }

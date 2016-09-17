@@ -161,9 +161,14 @@ namespace DiscordBot.Utilities
 
         }
 
+        public static bool isUserIgnored(UInt64 id)
+        {
+            return Program.Instance._config.ignoredUsers.Contains(id);
+        }
+
         public static bool isUserIgnored(string command, MessageEventArgs e)
         {
-            if (Program.Instance._config.ignoredUsers.Contains(e.User.Id))
+            if (isUserIgnored(e.User.Id))
             {
                 string logMsg = String.Format("Ignoring command '{0}' from user '{1}' [{2}] as they are on the ignore list", command, e.User.Name, e.User.Id);
 
