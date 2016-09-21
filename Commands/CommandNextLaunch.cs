@@ -105,7 +105,7 @@ namespace DiscordBot.Commands
                     if (search)
                         b.Append("\t");
                 }
-                if (json["windowcloses"] != null && json["windowopens"] != json["windowcloses"])
+                if ((!json["delayed"].ToObject<bool>() && !json["monthonlyeta"].ToObject<bool>()) && json["windowcloses"] != null && json["windowopens"] != json["windowcloses"])
                 {
                     string windowData = LaunchUtils.getWindowString(json);
                     b.AppendFormat("{0}\t\t", windowData);

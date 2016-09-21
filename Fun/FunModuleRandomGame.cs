@@ -309,9 +309,9 @@ namespace DiscordBot.Fun
 
         public override void onUserUpdate(UserUpdatedEventArgs e)
         {
-            if (e.After.CurrentGame != null && e.After.CurrentGame.HasValue && !Utils.isUserIgnored(e.After.Id) && !this.ignoredUserIDs.Contains(e.After.Id) && !e.After.Name.Equals("LaunchBot") && !e.After.CurrentGame.Value.Name.Equals(string.Empty) && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
+            try // There's an NRE here that I can't track down, so let's just ignore them for now, shall we? ;)
             {
-                try
+                if (e.After.CurrentGame != null && e.After.CurrentGame.HasValue && !Utils.isUserIgnored(e.After.Id) && !this.ignoredUserIDs.Contains(e.After.Id) && !e.After.Name.Equals("LaunchBot") && !e.After.CurrentGame.Value.Name.Equals(string.Empty) && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
                 {
                     string gameName = e.After.CurrentGame.Value.Name;
                     if (!this._blacklistedGames.Contains(gameName) && !gameName.ContainsIgnoreCase("Minecraft") && !this._gameNames.Contains(gameName))
@@ -322,8 +322,8 @@ namespace DiscordBot.Fun
                         Utils.sendToDebugChannel("[**RandomGame**] Learnt a new game from '{1}' [{2}]: {0}", gameName, e.After.Name, e.After.Id);
                     }
                 }
-                catch (NullReferenceException) { }
             }
+            catch (NullReferenceException) { }
 
             // 1.0.5.* adds the ability for the bot to change game on a user update event. 
             // This event's probability scales based on number of users, with a maximum chance of 1% and minimum of 0.1%
