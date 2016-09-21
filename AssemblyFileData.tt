@@ -15,7 +15,7 @@
         revisionNumber = 0; 
     }
 
-	string buildTimeString = String.Format(@"{0:dd/MM/yyyy \@ HH:mm:ss}", DateTime.UtcNow);
+	string buildTimeString = String.Format(@"{0:yyyy-MM-dd\THH:mm:ss\Z}", DateTime.UtcNow);
 
 #>
 //<#=revisionNumber#>
@@ -26,4 +26,4 @@
 using System.Reflection;
 using DiscordBot.Utilities;
 [assembly: AssemblyFileVersion("1.0.5.<#= revisionNumber #>")]
-[assembly: AssemblyBuildTime("<#= buildTimeString #> GMT")]
+[assembly: AssemblyBuildTime("<#= buildTimeString #>")]
