@@ -20,6 +20,9 @@ namespace DiscordBot.Utilities
     public static class Utils
     {
 
+        private static DateTime _userCountCacheTime = new DateTime(1970, 1, 1);
+        private static int _lastCachedUserCount = 0;
+
         public static bool userIsOwner(User u)
         {
             return Program.Instance._config.botOwnerAccountIDs.Contains(u.Id);
@@ -209,5 +212,22 @@ namespace DiscordBot.Utilities
             return string.Format(":{0}::skin-tone-{1}:", v, tone);
         }
 
+        public static int getUserCount()
+        {
+            int users = 0;
+            foreach (Server s in Program.Instance.client.Servers)
+                users += s.UserCount;
+            return users;
+        }
+
+        public static int getUserCountCached()
+        {
+            if (DateTime.Compare(_userCountCacheTime.AddHours(1), DateTime.Now) <= 0)
+            {
+                _userCountCacheTime = DateTime.Now;
+                _lastCachedUserCount = getUserCount();
+            }
+            return _lastCachedUserCount;
+        }
     }
 }

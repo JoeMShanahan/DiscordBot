@@ -28,7 +28,7 @@ namespace DiscordBot.Extensions
         public static string FromNthDeliminator(this string orig, int n, char delim)
         {
             string[] data = orig.Split(delim);
-            if (Math.Abs(n) > data.Length)
+            if (Math.Abs(n) >= data.Length)
                 throw new IndexOutOfRangeException();
             string @out = string.Empty;
             if (n > 0)

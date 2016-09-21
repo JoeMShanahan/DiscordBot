@@ -197,6 +197,7 @@ namespace DiscordBot.Commands
             {
                 this.Logger.Log("Initialising command '{0}'", t.FullName);
                 ICommand c = (ICommand)Activator.CreateInstance(t);
+                c.initialise();
                 this._commands.Add(c);
             }
         }

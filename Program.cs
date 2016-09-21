@@ -239,6 +239,9 @@ namespace DiscordBot
 
         private void MessageReceived(object sender, MessageEventArgs e, bool silent = true)
         {
+
+            if (e.Message.Text.Length == 0) { return; } // Fix for ArgumentOutOfRangeException on messages which are just images
+
             try
             {
                 this.funManager.onMessageReceived(e);

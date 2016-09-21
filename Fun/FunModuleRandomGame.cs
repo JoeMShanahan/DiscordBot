@@ -309,17 +309,36 @@ namespace DiscordBot.Fun
 
         public override void onUserUpdate(UserUpdatedEventArgs e)
         {
-            if (e.After.CurrentGame.HasValue && !Utils.isUserIgnored(e.After.Id) && !this.ignoredUserIDs.Contains(e.After.Id) && !e.After.Name.Equals("LaunchBot") && !e.After.CurrentGame.Value.Name.Equals(string.Empty) && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
+            if (e.After.CurrentGame != null && e.After.CurrentGame.HasValue && !Utils.isUserIgnored(e.After.Id) && !this.ignoredUserIDs.Contains(e.After.Id) && !e.After.Name.Equals("LaunchBot") && !e.After.CurrentGame.Value.Name.Equals(string.Empty) && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
             {
-                string gameName = e.After.CurrentGame.Value.Name;
-                if (!this._blacklistedGames.Contains(gameName) && !gameName.ContainsIgnoreCase("Minecraft") && !this._gameNames.Contains(gameName))
+                try
                 {
-                    this._gameNames.Add(gameName);
-                    this.saveGameList();
-                    this.Logger.Log("Learnt a new game: {0}", gameName);
-                    Utils.sendToDebugChannel("[**RandomGame**] Learnt a new game from '{1}' [{2}]: {0}", gameName, e.After.Name, e.After.Id);
+                    string gameName = e.After.CurrentGame.Value.Name;
+                    if (!this._blacklistedGames.Contains(gameName) && !gameName.ContainsIgnoreCase("Minecraft") && !this._gameNames.Contains(gameName))
+                    {
+                        this._gameNames.Add(gameName);
+                        this.saveGameList();
+                        this.Logger.Log("Learnt a new game: {0}", gameName);
+                        Utils.sendToDebugChannel("[**RandomGame**] Learnt a new game from '{1}' [{2}]: {0}", gameName, e.After.Name, e.After.Id);
+                    }
                 }
+                catch (NullReferenceException) { }
             }
+
+            // 1.0.5.* adds the ability for the bot to change game on a user update event. 
+            // This event's probability scales based on number of users, with a maximum chance of 1% and minimum of 0.1%
+            double randomChance = (30 / Utils.getUserCountCached()); // 300 users = min value (0.1%); initial start value of 30%, but capped at 1%.
+            // Because Random.NextDouble is weird and gives us a number from 0.0 to 1.0, these look a bit weird.
+            if (randomChance < 0.001) // 0.1%
+                randomChance = 0.001;
+            if (randomChance > 0.01) // 1%
+                randomChance = 0.01;
+
+            if (new Random(Utils.getEpochTime()).NextDouble() <= randomChance) // You're winner!
+            {
+                this.handleGameRoll();
+            }
+
         }
 
         public void loadGameList()
@@ -351,30 +370,36 @@ namespace DiscordBot.Fun
             //this.Logger.Log("{0}", _newGame);
             if (_newGame <= newGameMagicNumber) // N% chance hit, pick a new game (or not)
             {
-                //this.Logger.Log("Random chance on GameChance was hit -- {0}", DateTime.Compare(this.startedPlaying.AddMinutes(_gamePlayingGraceMinutes), DateTime.Now));
-                if (this.isPlayingGame && DateTime.Compare(this.startedPlaying.AddMinutes(_gamePlayingGraceMinutes), DateTime.Now) < 1)
+
+                this.handleGameRoll();
+
+            }
+        }
+
+        public void handleGameRoll()
+        {
+            //this.Logger.Log("Random chance on GameChance was hit -- {0}", DateTime.Compare(this.startedPlaying.AddMinutes(_gamePlayingGraceMinutes), DateTime.Now));
+            if (this.isPlayingGame && DateTime.Compare(this.startedPlaying.AddMinutes(_gamePlayingGraceMinutes), DateTime.Now) < 1)
+            {
+                int whatDo = (new Random(Utils.getEpochTime())).RealNext(1, 10); // If this is >= 5, we do nothing
+                if (whatDo == 1) // 10%, stop "playing"
                 {
-                    int whatDo = (new Random(Utils.getEpochTime())).RealNext(1, 10); // If this is >= 5, we do nothing
-                    if (whatDo == 1) // 10%, stop "playing"
-                    {
-                        this.saveCurrentGameTime();
-                        this.Logger.Log("Stopped playing");
-                        Program.Instance.client.SetGame(null);
-                        this.isPlayingGame = false;
-                    }
-                    else if (whatDo >= 2 && whatDo < 5) // 40%, pick a new game
-                    {
-                        this.saveCurrentGameTime();
-                        setRandomGame();
-                    }
-                    // else do nothing
+                    this.saveCurrentGameTime();
+                    this.Logger.Log("Stopped playing");
+                    Program.Instance.client.SetGame(null);
+                    this.isPlayingGame = false;
                 }
-                else if (!this.isPlayingGame)
+                else if (whatDo >= 2 && whatDo < 5) // 40%, pick a new game
                 {
-                    this.isPlayingGame = true;
+                    this.saveCurrentGameTime();
                     setRandomGame();
                 }
-
+                // else do nothing
+            }
+            else if (!this.isPlayingGame)
+            {
+                this.isPlayingGame = true;
+                setRandomGame();
             }
         }
 

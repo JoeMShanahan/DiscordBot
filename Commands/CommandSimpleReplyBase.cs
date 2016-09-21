@@ -52,5 +52,7 @@ namespace DiscordBot.Commands
         {
             return string.Empty;
         }
+
+        public virtual void initialise() { }
     }
 }

@@ -11,6 +11,8 @@ namespace DiscordBot.Commands
     {
         public abstract void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false);
 
+        public virtual void initialise() { }
+
         public virtual CommandPermissionLevel getRequiredPermissionLevel()
         {
             return CommandPermissionLevel.NORMAL_USER;

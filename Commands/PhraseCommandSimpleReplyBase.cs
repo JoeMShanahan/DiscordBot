@@ -37,6 +37,8 @@ namespace DiscordBot.Commands
             return true;
         }
 
+        public virtual void initialise() { }
+
         public virtual void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             e.Channel.SendMessage(this.reply);

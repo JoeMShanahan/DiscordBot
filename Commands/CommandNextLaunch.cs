@@ -7,6 +7,7 @@ using System;
 using DiscordBot.Utilities;
 using DiscordBot.Extensions;
 using System.Text;
+using System.Collections.Generic;
 
 namespace DiscordBot.Commands
 {
@@ -89,6 +90,21 @@ namespace DiscordBot.Commands
                 b.AppendFormattedLine((search ? "\t" : "") + final);
                 if (search)
                     b.Append("\t");
+                if (json["hasTags"].ToObject<bool>())
+                {
+                    b.Append("Tags: ");
+                    List<Dictionary<string, string>> tags = new List<Dictionary<string, string>>(json["tags"].ToObject<List<Dictionary<string, string>>>());
+                    int tIn = 0;
+                    foreach (Dictionary<string, string> dic in tags)
+                    {
+                        if (tIn++ >= 1)
+                            b.Append(", ");
+                        b.AppendFormat("**{0}**", dic["text"]);
+                    }
+                    b.AppendLine();
+                    if (search)
+                        b.Append("\t");
+                }
                 if (json["windowcloses"] != null && json["windowopens"] != json["windowcloses"])
                 {
                     string windowData = LaunchUtils.getWindowString(json);
