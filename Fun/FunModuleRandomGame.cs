@@ -327,7 +327,7 @@ namespace DiscordBot.Fun
 
             // 1.0.5.* adds the ability for the bot to change game on a user update event. 
             // This event's probability scales based on number of users, with a maximum chance of 1% and minimum of 0.1%
-            double randomChance = (30 / Utils.getUserCountCached()); // 300 users = min value (0.1%); initial start value of 30%, but capped at 1%.
+            double randomChance = (30 / Utils.getUserCountCached()) / 10; // 300 users = min value (0.1%); initial start value of 30%, but capped at 1%.
             // Because Random.NextDouble is weird and gives us a number from 0.0 to 1.0, these look a bit weird.
             if (randomChance < 0.001) // 0.1%
                 randomChance = 0.001;
