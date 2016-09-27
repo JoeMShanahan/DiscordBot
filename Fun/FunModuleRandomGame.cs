@@ -67,8 +67,8 @@ namespace DiscordBot.Fun
             {
                 if (x++ >= (top5 ? 5 : 10)) { break; }
                 long time = kvp.Value;
-                if (rg.isPlayingGame && rg.currentGame.EqualsIgnoreCase(kvp.Key))
-                    time += (long)(DateTime.Now - rg.startedPlaying).TotalSeconds;
+                //if (rg.isPlayingGame && rg.currentGame.EqualsIgnoreCase(kvp.Key))
+                //    time += (long)(DateTime.Now - rg.startedPlaying).TotalSeconds; // I'm an idiot.
                 sb.AppendFormattedLine("**{0}**. {1}: {2}", x, kvp.Key, Utils.FormatUptime(TimeSpan.FromSeconds(time)));
             }
             e.Channel.SendMessage(sb.ToString());
