@@ -35,5 +35,17 @@ namespace DiscordBot.Commands
         }
 
         public virtual void initialise() { }
+
+        public abstract string helpText();
+        public virtual string usageText() { return "%c%"; }
+        public virtual string CommandName
+        {
+            get
+            {
+                string[] c = this.ToString().Split('.');
+                string name = c[c.Length - 1];
+                return name.Substring(13);
+            }
+        }
     }
 }

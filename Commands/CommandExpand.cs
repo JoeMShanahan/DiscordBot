@@ -29,6 +29,16 @@ namespace DiscordBot.Commands
         private List<ExpandEntry> definitions = new List<ExpandEntry>();
         private Logger Logger;
 
+        public override string helpText()
+        {
+            return "Displays expanded values for what space-related abbreviations or initialisms stand for";
+        }
+
+        public override string usageText()
+        {
+            return "%c% <abbreviation or initialism>";
+        }
+
         public override void initialise()
         {
             this.Logger = CommandManager.Instance.Logger.createSubLogger("CommandExpand");

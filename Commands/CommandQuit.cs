@@ -33,5 +33,10 @@ namespace DiscordBot.Commands
         {
             return new string[] { "qqq", "die", "terminate", "exit", "disconnect" };
         }
+
+        public override string helpText()
+        {
+            return "Makes the bot disconnect from Discord and terminate its process";
+        }
     }
 }

@@ -37,5 +37,15 @@ namespace DiscordBot.Commands
         {
             return false;
         }
+
+        public override string helpText()
+        {
+            return "Makes the bot change it's current game to _game_";
+        }
+
+        public override string usageText()
+        {
+            return "%c% <game>";
+        }
     }
 }

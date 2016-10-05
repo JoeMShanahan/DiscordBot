@@ -56,5 +56,10 @@ namespace DiscordBot.Commands
         {
             return new string[] { "debug", "status", "info" };
         }
+
+        public override string helpText()
+        {
+            return "Displays (mostly debug) information on the bot's current session";
+        }
     }
 }

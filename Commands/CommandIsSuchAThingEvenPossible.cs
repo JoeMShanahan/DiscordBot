@@ -12,6 +12,10 @@ namespace DiscordBot.Commands
 
         public CommandIsSuchAThingEvenPossible() : base("https://i.imgur.com/iXtChhJ.gifv", true) { }
 
+        public override string helpText()
+        {
+            return "Yes it is";
+        }
     }
 
 }

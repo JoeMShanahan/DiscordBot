@@ -51,5 +51,15 @@ namespace DiscordBot.Commands
         {
             return false;
         }
+
+        public override string helpText()
+        {
+            return "Allows remote manipulation of the bot's configuration";
+        }
+
+        public override string usageText()
+        {
+            return "%c% <config entry> [new value]";
+        }
     }
 }

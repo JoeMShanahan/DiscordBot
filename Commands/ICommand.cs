@@ -16,6 +16,9 @@ namespace DiscordBot.Commands
         bool goesOnCooldown();
         string[] getCommandAliases();
         string triggerPattern();
+        string helpText();
+        string usageText();
+        string CommandName{ get; }
 
     }
 }

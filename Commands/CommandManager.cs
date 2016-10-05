@@ -1,4 +1,5 @@
 ﻿using Discord;
+using DiscordBot.Extensions;
 using DiscordBot.Logging;
 using DiscordBot.Utilities;
 using System;
@@ -20,6 +21,8 @@ namespace DiscordBot.Commands
         BOT_OWNER = 4,
         TEST = 5 // Nobody has this level. It's for testing invalid permissions!
     }
+
+    public class NoSuchCommandException : Exception { }
 
     public class CommandManager
     {
@@ -200,6 +203,24 @@ namespace DiscordBot.Commands
                 c.initialise();
                 this._commands.Add(c);
             }
+        }
+
+        public ICommand[] getCommandsMatchingName(string name)
+        {
+            return this._commands.FindAll(c => c.ToString().EndsWithIgnoreCase(name) || c.getCommandAliases().Contains(name.ToLower())).ToArray();
+        }
+
+        public T getCommandFromName<T>(string name)
+        {
+            ICommand com = this._commands.FirstOrDefault(c => c.ToString().EndsWithIgnoreCase(name) || c.getCommandAliases().Contains(name.ToLower()));
+            if (com == null)
+                throw new NoSuchCommandException();
+            return (T)com;
+        }
+
+        public List<ICommand> getCommandList()
+        {
+            return new List<ICommand>(this._commands);
         }
 
     }

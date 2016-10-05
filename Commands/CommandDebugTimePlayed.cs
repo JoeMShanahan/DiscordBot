@@ -32,5 +32,10 @@ namespace DiscordBot.Commands
             else
                 e.Channel.SendMessage("Not playing a game.");
         }
+
+        public override string helpText()
+        {
+            return "Displays debug information on the game the bot is playing";
+        }
     }
 }

@@ -10,6 +10,8 @@ namespace DiscordBot.Commands
     public abstract class CommandBase : ICommand // I know we don't need to implement the interface here, I do it just to make sure I have all the methods in the base class.
     {
         public abstract void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false);
+        public abstract string helpText();
+        public virtual string usageText() { return "%c%"; }
 
         public virtual void initialise() { }
 
@@ -36,6 +38,16 @@ namespace DiscordBot.Commands
         public virtual string triggerPattern()
         {
             return string.Empty;
+        }
+
+        public virtual string CommandName
+        {
+            get
+            {
+                string[] c = this.ToString().Split('.');
+                string name = c[c.Length - 1];
+                return name.Substring(7);
+            }
         }
 
     }

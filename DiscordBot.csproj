@@ -87,6 +87,7 @@
     </Compile>
     <Compile Include="Commands\CommandAmIOwner.cs" />
     <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Commands\CommandCommands.cs" />
     <Compile Include="Commands\CommandConfig.cs" />
     <Compile Include="Commands\CommandDebugTimePlayed.cs" />
     <Compile Include="Commands\CommandExpand.cs" />
@@ -103,18 +104,15 @@
     <Compile Include="Commands\CommandMyPermissions.cs" />
     <Compile Include="Commands\CommandNextLaunch.cs" />
     <Compile Include="Commands\CommandQuit.cs" />
-    <Compile Include="Commands\CommandRegexTest.cs" />
     <Compile Include="Commands\CommandSetGame.cs" />
     <Compile Include="Commands\CommandSimpleReplyBase.cs" />
     <Compile Include="Commands\CommandStats.cs" />
     <Compile Include="Commands\CommandSuperStrypi.cs" />
-    <Compile Include="Commands\CommandTest.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\PhraseCommandBase.cs" />
     <Compile Include="Commands\PhraseCommandHello.cs" />
     <Compile Include="Commands\PhraseCommandQuit.cs" />
     <Compile Include="Commands\PhraseCommandSimpleReplyBase.cs" />
-    <Compile Include="Commands\PhraseCommandTest.cs" />
     <Compile Include="Commands\PhraseCommandThanks.cs" />
     <Compile Include="Config\BotConfig.cs" />
     <Compile Include="Extensions\DiscordNETExtensions.cs" />

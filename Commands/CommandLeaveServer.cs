@@ -15,6 +15,16 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.BOT_OWNER;
         }
 
+        public override string helpText()
+        {
+            return "Makes the bot leave the server which matches the specified _serverid_";
+        }
+
+        public override string usageText()
+        {
+            return "%c% <serverid>";
+        }
+
         public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             try

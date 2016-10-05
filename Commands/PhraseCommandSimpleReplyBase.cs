@@ -7,7 +7,7 @@ using Discord;
 
 namespace DiscordBot.Commands
 {
-    public class PhraseCommandSimpleReplyBase : ICommand
+    public abstract class PhraseCommandSimpleReplyBase : ICommand
     {
 
         string reply = string.Empty;
@@ -47,6 +47,18 @@ namespace DiscordBot.Commands
         public virtual string triggerPattern()
         {
             return string.Empty;
+        }
+
+        public abstract string helpText();
+        public virtual string usageText() { return "%c%"; }
+        public virtual string CommandName
+        {
+            get
+            {
+                string[] c = this.ToString().Split('.');
+                string name = c[c.Length - 1];
+                return name.Substring(13);
+            }
         }
     }
 }

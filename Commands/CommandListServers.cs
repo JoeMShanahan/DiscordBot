@@ -14,6 +14,16 @@ namespace DiscordBot.Commands
             return CommandPermissionLevel.BOT_OWNER;
         }
 
+        public override string helpText()
+        {
+            return "Lists all currently connected servers. If -c is given, also lists all channels on the servers";
+        }
+
+        public override string usageText()
+        {
+            return "%c% [-c]";
+        }
+
         public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
 

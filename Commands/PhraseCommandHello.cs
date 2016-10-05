@@ -11,6 +11,11 @@ namespace DiscordBot.Commands
 {
     public class PhraseCommandHello : PhraseCommandBase, ICommand
     {
+        public override string helpText()
+        {
+            return "Hello :)";
+        }
+
         public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = true)
         {
             e.Channel.SendMessageFormatted("Hello, {0} {1}", e.User.Mention, Utils.emojiWithRandomSkintone("wave"));
@@ -18,7 +23,7 @@ namespace DiscordBot.Commands
 
         public override string triggerPattern()
         {
-            return @"%me%,?? (hello|hi|o\/|hola|sup)|(hello|hi|o\/|hola|sup),? %me%";
+            return @"%me%,? (hello|hi|o\/|hola|sup)|(hello|hi|o\/|hola|sup),? %me%";
         }
     }
 }

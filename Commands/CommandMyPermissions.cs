@@ -32,5 +32,10 @@ namespace DiscordBot.Commands
         {
             return new string[] { "myperms", "perms", "permslist" };
         }
+
+        public override string helpText()
+        {
+            return "Returns a list of bot permissions you have on the current server";
+        }
     }
 }

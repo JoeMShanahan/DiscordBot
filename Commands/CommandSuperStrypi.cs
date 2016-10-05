@@ -16,5 +16,10 @@ namespace DiscordBot.Commands
         {
             return new string[] { "strypi" };
         }
+
+        public override string helpText()
+        {
+            return "You spin me right round baby, right round";
+        }
     }
 }

@@ -140,5 +140,15 @@ namespace DiscordBot.Commands
         {
             return new string[] { "nl" };
         }
+
+        public override string helpText()
+        {
+            return "If _search_ is not provided this command will return information on the next rocket launch. If _search_ is provided, it will return information on the first upcoming launch (if any) that matches _search_";
+        }
+
+        public override string usageText()
+        {
+            return "%c% [search]";
+        }
     }
 }

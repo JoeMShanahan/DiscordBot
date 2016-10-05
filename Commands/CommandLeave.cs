@@ -33,5 +33,10 @@ namespace DiscordBot.Commands
         {
             return false;
         }
+
+        public override string helpText()
+        {
+            return "Makes the bot leave the server this command was triggered on.";
+        }
     }
 }

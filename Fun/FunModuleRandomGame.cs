@@ -22,6 +22,11 @@ namespace DiscordBot.Fun
             return CommandPermissionLevel.BOT_ADMIN;
         }
 
+        public override string helpText()
+        {
+            return "Blacklists games to stop LaunchBot from learning them.";
+        }
+
         public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
         {
             string gameList = e.Message.Text.FromNthDeliminator(1, ' ');
@@ -43,6 +48,11 @@ namespace DiscordBot.Fun
                 rg.saveGameList();
 
             }
+        }
+
+        public override string usageText()
+        {
+            return "%c% game1[,game2[,game3[,...]]]";
         }
     }
 
@@ -79,6 +89,15 @@ namespace DiscordBot.Fun
             return new string[] { "top5", "top10", "top10games" };
         }
 
+        public override string helpText()
+        {
+            return "Displays the top 5 or 10 games (depending on command used) games that LaunchBot has played";
+        }
+
+        public override string usageText()
+        {
+            return "%c%";
+        }
     }
 
     public class CommandHowLongPlaying : CommandBase, ICommand
@@ -124,6 +143,16 @@ namespace DiscordBot.Fun
                 return @"%me%,? how long have you been playing that( game)?\??";
             }
         }
+
+        public override string helpText()
+        {
+            return "Displays how long the bot has been playing its current game (if any)";
+        }
+
+        public override string usageText()
+        {
+            return "%c%";
+        }
     }
 
     public class CommandListGameTimes : CommandBase, ICommand
@@ -132,6 +161,11 @@ namespace DiscordBot.Fun
         public override CommandPermissionLevel getRequiredPermissionLevel()
         {
             return CommandPermissionLevel.BOT_ADMIN;
+        }
+
+        public override string helpText()
+        {
+            return "Displays **ALL** total game play times";
         }
 
         public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
@@ -152,6 +186,11 @@ namespace DiscordBot.Fun
                 e.Channel.SendMessage(b.ToString());
             }
         }
+
+        public override string usageText()
+        {
+            return "%c%";
+        }
     }
 
     public class CommandListGames : CommandBase, ICommand
@@ -160,6 +199,11 @@ namespace DiscordBot.Fun
         public override CommandPermissionLevel getRequiredPermissionLevel()
         {
             return CommandPermissionLevel.BOT_ADMIN;
+        }
+
+        public override string helpText()
+        {
+            return "Returns **ALL** games that the bot knows";
         }
 
         public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
@@ -179,6 +223,11 @@ namespace DiscordBot.Fun
             }
             e.Channel.SendMessageFormatted("{0}```", sb.ToString());
         }
+
+        public override string usageText()
+        {
+            return "%c%";
+        }
     }
 
     public class CommandIgnoreGamesFrom : CommandBase, ICommand
@@ -186,6 +235,11 @@ namespace DiscordBot.Fun
         public override CommandPermissionLevel getRequiredPermissionLevel()
         {
             return CommandPermissionLevel.BOT_ADMIN;
+        }
+
+        public override string helpText()
+        {
+            return "Adds the specified _userid_ to the game learning ignore list, stopping games they play from being learnt by the bot";
         }
 
         public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
@@ -207,6 +261,11 @@ namespace DiscordBot.Fun
                 }
             }
             catch (Exception _e) { e.Channel.SendMessageFormatted("Unable to ignore user: {0}", _e.Message ?? "No Message"); }
+        }
+
+        public override string usageText()
+        {
+            return "%c% <userid>";
         }
     }
 

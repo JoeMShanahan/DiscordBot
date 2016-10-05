@@ -79,5 +79,14 @@ namespace DiscordBot.Commands
             return @"%me%,? (give|show) me (a list of|some) upcoming launches";
         }
 
+        public override string helpText()
+        {
+            return "Returns a list of _N_ upcoming rocket launches. (_N_ defaults to **5**)";
+        }
+
+        public override string usageText()
+        {
+            return "%c% [N]";
+        }
     }
 }

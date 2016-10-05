@@ -69,5 +69,10 @@ namespace DiscordBot.Extensions
                 ret = ret.Replace(needles[x], replacements[x]);
             return ret;
         }
+
+        public static string Join(this string[] strings, string separator) // I'm lazy
+        {
+            return String.Join(separator, strings);
+        }
     }
 }

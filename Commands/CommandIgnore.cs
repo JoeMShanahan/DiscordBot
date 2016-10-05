@@ -65,5 +65,16 @@ namespace DiscordBot.Commands
         {
             return false;
         }
+
+        public override string helpText()
+        {
+            return "Addes _userid_ to the user ignore list";
+        }
+
+
+        public override string usageText()
+        {
+            return "%c% <userid>";
+        }
     }
 }

@@ -16,5 +16,10 @@ namespace DiscordBot.Commands
         {
             return new string[] { "schedule" };
         }
+
+        public override string helpText()
+        {
+            return "Returns a link to the launch schedule page";
+        }
     }
 }
