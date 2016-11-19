@@ -42,7 +42,7 @@ namespace DiscordBot.Commands
         public override void initialise()
         {
             this.Logger = CommandManager.Instance.Logger.createSubLogger("CommandExpand");
-            string[] jsonURLs = new string[] { "http://www.decronym.xyz/acronyms/SpaceX.json", "http://www.decronym.xyz/acronyms/ULA.json", "http://www.decronym.xyz/acronyms/Spaceflight.json", "http://www.decronym.xyz/acronyms/Space.json" };
+            string[] jsonURLs = new string[] { "http://www.decronym.xyz/acronyms/SpaceX.json", "http://www.decronym.xyz/acronyms/ULA.json", "http://www.decronym.xyz/acronyms/Spaceflight.json", "http://www.decronym.xyz/acronyms/Space.json", "http://www.decronym.xyz/acronyms/ISRO.json", "http://www.decronym.xyz/acronyms/TMRO.json" };
             foreach (string url in jsonURLs)
             {
                 this.Logger.Log("Loading definitions from {0}...", url);

@@ -50,6 +50,11 @@ namespace DiscordBot.Fun
             }
         }
 
+        public override string[] getCommandAliases()
+        {
+            return new string[] { "blg" };
+        }
+
         public override string usageText()
         {
             return "%c% game1[,game2[,game3[,...]]]";
@@ -269,6 +274,30 @@ namespace DiscordBot.Fun
         }
     }
 
+    public class CommandGameStats : CommandBase, ICommand
+    {
+        public override string helpText()
+        {
+            return "Displays information on the bot's current game database.";
+        }
+
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
+        {
+            FunModuleRandomGame fmrg = FunManager.Instance.getFunModuleWithName<FunModuleRandomGame>("RandomGame");
+            int gamecount = fmrg._gameNames.Count;
+            int gamesplayed = fmrg._playTimes.Count;
+            long totalplaytime = 0L;
+            foreach (long u in fmrg._playTimes.Values)
+                totalplaytime += u;
+            e.Channel.SendMessageFormatted("{0}, I have **{1}** games in my database of which I have played **{2}** (**{3:P2}**). The games I have played total **{4}** (**d:h:m:s**) in playtime.", e.User.Mention, gamecount, gamesplayed, ((decimal)gamesplayed / (decimal)gamecount), Utils.FormatUptime(TimeSpan.FromSeconds(totalplaytime)));
+        }
+
+        public override string usageText()
+        {
+            return "%c%";
+        }
+    }
+
     public class FunModuleRandomGame : FunModuleBase, IFunModule
     {
 
@@ -370,7 +399,7 @@ namespace DiscordBot.Fun
         {
             try // There's an NRE here that I can't track down, so let's just ignore them for now, shall we? ;)
             {
-                if (e.After.CurrentGame != null && e.After.CurrentGame.HasValue && !Utils.isUserIgnored(e.After.Id) && !this.ignoredUserIDs.Contains(e.After.Id) && !e.After.Name.Equals("LaunchBot") && !e.After.CurrentGame.Value.Name.Equals(string.Empty) && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
+                if (!e.After.IsBot && e.After.CurrentGame != null && e.After.CurrentGame.HasValue && !Utils.isUserIgnored(e.After.Id) && !this.ignoredUserIDs.Contains(e.After.Id) && !e.After.Name.Equals("LaunchBot") && !e.After.CurrentGame.Value.Name.Equals(string.Empty) && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
                 {
                     string gameName = e.After.CurrentGame.Value.Name;
                     if (!this._blacklistedGames.Contains(gameName) && !gameName.ContainsIgnoreCase("Minecraft") && !this._gameNames.Contains(gameName))
@@ -415,9 +444,9 @@ namespace DiscordBot.Fun
 
         public override void onServerJoined(ServerEventArgs e) // Restore game status after unplanned disconnects
         {
-            if (this.isPlayingGame && !this.currentGame.Equals(Program.Instance.client.CurrentGame.Name))
+            if (this.isPlayingGame/* && !this.currentGame.Equals(Program.Instance.client.CurrentGame.Name)*/)
             {
-                Program.Instance.client.SetGame(this.currentGame);
+                Program.Instance.client.SetGame(new Game(this.currentGame));
             }
         }
 
