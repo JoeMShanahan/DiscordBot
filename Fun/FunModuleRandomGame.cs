@@ -4,12 +4,13 @@ using DiscordBot.Extensions;
 using DiscordBot.Logging;
 using DiscordBot.Utilities;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using static DiscordBot.Fun.FunModuleRandomGame;
 
 namespace DiscordBot.Fun
 {
@@ -254,15 +255,15 @@ namespace DiscordBot.Fun
             try
             {
                 userid = Convert.ToUInt64(e.Message.Text.FromNthDeliminator(1, ' '));
-                if (!rg.ignoredUserIDs.Contains(userid))
+                if (rg.ignoredEntities.Count(a => a.UniqueID == userid && a.Type == GameIgnoreEntry.IgnoreType.USER) == 0)
                 {
-                    rg.ignoredUserIDs.Add(userid);
+                    rg.ignoredEntities.Add(new GameIgnoreEntry(userid, GameIgnoreEntry.IgnoreType.USER));
                     e.Channel.SendMessageFormatted("Added user ID {0} to game learn blacklist.", userid);
                     rg.saveIgnoredUsers();
                 }
                 else
                 {
-                    e.Channel.SendMessageFormatted("{0} is already ignored!", userid);
+                    e.Channel.SendMessageFormatted("UserID {0} is already ignored!", userid);
                 }
             }
             catch (Exception _e) { e.Channel.SendMessageFormatted("Unable to ignore user: {0}", _e.Message ?? "No Message"); }
@@ -298,9 +299,68 @@ namespace DiscordBot.Fun
         }
     }
 
+    public class CommandIgnoreGamesFromServer : CommandBase, ICommand
+    {
+        public override CommandPermissionLevel getRequiredPermissionLevel()
+        {
+            return CommandPermissionLevel.BOT_ADMIN;
+        }
+
+        public override string helpText()
+        {
+            return "Instructs the bot to ignore game changes for users on the server matching _serverid_";
+        }
+
+        public override void invoke(MessageEventArgs e, bool pub, bool fromPhrase = false)
+        {
+            FunModuleRandomGame rg = FunManager.Instance.getFunModuleWithName<FunModuleRandomGame>("RandomGame");
+            ulong serverid = 0;
+            try
+            {
+                serverid = Convert.ToUInt64(e.Message.Text.FromNthDeliminator(1, ' '));
+                if (rg.ignoredEntities.Count(a => a.UniqueID == serverid && a.Type == GameIgnoreEntry.IgnoreType.SERVER) == 0)
+                {
+                    rg.ignoredEntities.Add(new GameIgnoreEntry(serverid, GameIgnoreEntry.IgnoreType.SERVER));
+                    e.Channel.SendMessageFormatted("Added server ID {0} to game learn blacklist.", serverid);
+                    rg.saveIgnoredUsers();
+                }
+                else
+                {
+                    e.Channel.SendMessageFormatted("ServerID {0} is already ignored!", serverid);
+                }
+            }
+            catch (Exception _e) { e.Channel.SendMessageFormatted("Unable to ignore server: {0}", _e.Message ?? "No Message"); }
+        }
+
+        public override string usageText()
+        {
+            return "%c% <serverid>";
+        }
+    }
+
     public class FunModuleRandomGame : FunModuleBase, IFunModule
     {
 
+        public class GameIgnoreEntry
+        {
+            public enum IgnoreType
+            {
+                USER,
+                SERVER,
+            }
+
+            public ulong UniqueID { get; private set; }
+            public IgnoreType Type { get; private set; }
+
+            public GameIgnoreEntry(ulong uniqueID, IgnoreType type)
+            {
+                this.UniqueID = uniqueID;
+                this.Type = type;
+            }
+        }
+
+        public const int IGNORE_VERSION = 1;
+        
         // These are mostly satire, but there's some legit games in here too
         // ^ let's be honest, they're mostly legit, with a few satire
         public List<string> _gameNames = new List<string> {
@@ -382,7 +442,8 @@ namespace DiscordBot.Fun
         public string currentGame { get; private set; }
         public Dictionary<string, long> _playTimes = new Dictionary<string, long>();
         public List<string> _blacklistedGames = new List<string> { "Steam", "Unity", "Minecraft", "Visual Studio", "SCS Workshop Uploader", "skyrim", "Skyrim" };
-        public List<ulong> ignoredUserIDs = new List<ulong>();
+        //public List<ulong> ignoredEntities = new List<ulong>();
+        public List<GameIgnoreEntry> ignoredEntities = new List<GameIgnoreEntry>();
 
         public FunModuleRandomGame()
         {
@@ -399,7 +460,7 @@ namespace DiscordBot.Fun
         {
             try // There's an NRE here that I can't track down, so let's just ignore them for now, shall we? ;)
             {
-                if (!e.After.IsBot && e.After.CurrentGame != null && e.After.CurrentGame.HasValue && !Utils.isUserIgnored(e.After.Id) && !this.ignoredUserIDs.Contains(e.After.Id) && !e.After.Name.Equals("LaunchBot") && !e.After.CurrentGame.Value.Name.Equals(string.Empty) && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
+                if (!e.After.IsBot && e.After.CurrentGame != null && e.After.CurrentGame.HasValue && !Utils.isUserIgnored(e.After.Id) && this.ignoredEntities.Count(a => (a.UniqueID == e.After.Id && a.Type == GameIgnoreEntry.IgnoreType.USER) || (a.UniqueID == e.After.Server.Id && a.Type == GameIgnoreEntry.IgnoreType.SERVER)) == 0 && !e.After.Name.Equals("LaunchBot") && !e.After.CurrentGame.Value.Name.Equals(string.Empty) && (e.After.CurrentGame.Value.Url == null || e.After.CurrentGame.Value.Url == string.Empty))
                 {
                     string gameName = e.After.CurrentGame.Value.Name;
                     if (!this._blacklistedGames.Contains(gameName) && !gameName.ContainsIgnoreCase("Minecraft") && !this._gameNames.Contains(gameName))
@@ -553,14 +614,52 @@ namespace DiscordBot.Fun
         public void loadIgnoredUsers()
         {
             if (!File.Exists("config/FunModule_RandomGame_Ignores.cfg")) { return; }
-            this.ignoredUserIDs = new List<ulong>(JsonConvert.DeserializeObject<List<ulong>>(File.ReadAllText("config/FunModule_RandomGame_Ignores.cfg")));
-            this.Logger.Log("Loaded {0} ignores from config", this.ignoredUserIDs.Count);
+            //this.ignoredEntities = new List<ulong>(JsonConvert.DeserializeObject<List<ulong>>(File.ReadAllText("config/FunModule_RandomGame_Ignores.cfg")));
+            int ignoreVersion = 0;
+            string json = File.ReadAllText("config/FunModule_RandomGame_Ignores.cfg");
+            JObject _json = new JObject();
+            try
+            {
+                _json = JObject.Parse(json);
+                try
+                {
+                    ignoreVersion = Convert.ToInt32(_json["IGNORE_VERSION"].ToString());
+                }
+                catch { }
+            }
+            catch { }
+            this.Logger.Log("Current ignore version is {0}", ignoreVersion);
+            if (ignoreVersion == 0)
+            {
+                this.Logger.Log("Applying IGNORE_VERSION 0 patch to ignore list...", LogLevel.WARNING);
+                List<ulong> _tmp = new List<ulong>(JsonConvert.DeserializeObject<List<ulong>>(File.ReadAllText("config/FunModule_RandomGame_Ignores.cfg")));
+                foreach (ulong a in _tmp)
+                {
+                    this.Logger.Log("Adding ignore entry of type {0} for UID {1}", GameIgnoreEntry.IgnoreType.USER, a);
+                    this.ignoredEntities.Add(new GameIgnoreEntry(a, GameIgnoreEntry.IgnoreType.USER));
+                }
+                this.Logger.Log("IGNORE_VERSION 0 patch done.", LogLevel.WARNING);
+                this.saveIgnoredUsers();
+                return;
+            }
+            else
+            {
+                foreach(JObject jo in _json["ignoredEntities"])
+                {
+                    ulong id = Convert.ToUInt64(jo["UniqueID"].ToString());
+                    GameIgnoreEntry.IgnoreType ignoretype = (GameIgnoreEntry.IgnoreType)(Convert.ToInt32(jo["Type"].ToString()));
+                    this.Logger.Log("Adding ignore entry of type {0} for UID {1}", ignoretype, id);
+                    this.ignoredEntities.Add(new GameIgnoreEntry(id, ignoretype));
+                }
+            }
+            this.Logger.Log("Loaded {0} ignores from config", this.ignoredEntities.Count);
         }
 
         public void saveIgnoredUsers()
         {
-            string json = JsonConvert.SerializeObject(this.ignoredUserIDs, Formatting.Indented);
-            File.WriteAllText("config/FunModule_RandomGame_Ignores.cfg", json);
+            string json = JsonConvert.SerializeObject(this.ignoredEntities);
+            string combined = JsonConvert.SerializeObject(new { IGNORE_VERSION, this.ignoredEntities }, Formatting.Indented);
+            File.WriteAllText("config/FunModule_RandomGame_Ignores.cfg", combined);
         }
 
     }
