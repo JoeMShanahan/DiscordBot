@@ -91,6 +91,7 @@
     <Compile Include="Commands\CommandConfig.cs" />
     <Compile Include="Commands\CommandDebugTimePlayed.cs" />
     <Compile Include="Commands\CommandExpand.cs" />
+    <Compile Include="Commands\CommandGameRankings.cs" />
     <Compile Include="Commands\CommandIgnore.cs" />
     <Compile Include="Commands\CommandIsSuchAThingEvenPossible.cs" />
     <Compile Include="Commands\CommandLastLaunch.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Commands\CommandListCommands.cs" />
     <Compile Include="Commands\CommandListServers.cs" />
     <Compile Include="Commands\CommandManager.cs" />
+    <Compile Include="Commands\CommandMLP.cs" />
     <Compile Include="Commands\CommandMyPermissions.cs" />
     <Compile Include="Commands\CommandNextLaunch.cs" />
     <Compile Include="Commands\CommandQuit.cs" />
