@@ -561,7 +561,12 @@ namespace DiscordBot.Fun
         public void setRandomGame()
         {
             this.startedPlaying = DateTime.Now;
-            string game = _gameNames[new Random(Utils.getEpochTime()).Next(_gameNames.Count)];
+            /*
+             * Attempt to fix Mono's mysterious bias towards the first entry in the list of games.
+             * Thanks Addle!
+             */
+            Random r = new Random(Guid.NewGuid().ToByteArray().First());
+            string game = _gameNames[r.Next(_gameNames.Count)];
             this.currentGame = game;
             this.Logger.Log("Now playing: {0}", game);
             Program.Instance.client.SetGame(new Game(game));
